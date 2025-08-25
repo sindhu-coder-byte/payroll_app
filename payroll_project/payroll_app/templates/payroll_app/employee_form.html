@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#ef9cda]">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow flex justify-between items-center px-6 py-3">
+        <div class="text-[#7768ae] font-bold text-xl">Payroll System</div>
+        <ul class="flex space-x-6 text-[#00b9b9] font-semibold">
+            <li><a href="{% url 'dashboard' %}" class="hover:text-[#ff9b4b]">Dashboard</a></li>
+            <li><a href="{% url 'employees' %}" class="hover:text-[#ff9b4b]">Employees</a></li>
+            <li><a href="{% url 'payroll' %}" class="hover:text-[#ff9b4b]">Payroll</a></li>
+            <li><a href="{% url 'payslip' %}" class="hover:text-[#ff9b4b]">Payslip</a></li>
+            <li><a href="#" class="hover:text-[#ff9b4b]">Reports</a></li>
+            <li><a href="#" class="hover:text-[#ff9b4b]">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="p-6">
+        <h2 class="text-[#7768ae] font-bold text-xl mb-4">{{ title }}</h2>
+
+        <form method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-6 rounded shadow">
+            {% csrf_token %}
+
+            <!-- Render each field manually -->
+            <div>
+                {{ form.name.label_tag }} 
+                {{ form.name }}
+            </div>
+            <div>
+                {{ form.role.label_tag }}
+                {{ form.role }}
+            </div>
+            <div>
+                {{ form.department.label_tag }}
+                {{ form.department }}
+            </div>
+            <div>
+                {{ form.salary.label_tag }}
+                {{ form.salary }}
+            </div>
+            <div>
+                {{ form.bonus.label_tag }}
+                {{ form.bonus }}
+            </div>
+            <div>
+                {{ form.da.label_tag }}
+                {{ form.da }}
+            </div>
+            <div>
+                {{ form.designation.label_tag }}
+                {{ form.designation }}
+            </div>
+            <div>
+                {{ form.join_date.label_tag }}
+                {{ form.join_date }}
+            </div>
+            <div>
+                {{ form.work_hours.label_tag }}
+                {{ form.work_hours }}
+            </div>
+            <div>
+                {{ form.working_days.label_tag }}
+                {{ form.working_days }}
+            </div>
+            <div>
+                {{ form.leave_days.label_tag }}
+                {{ form.leave_days }}
+            </div>
+            <div>
+                {{ form.deduction.label_tag }}
+                {{ form.deduction }}
+            </div>
+            <div>
+                {{ form.status.label_tag }}
+                {{ form.status }}
+            </div>
+             <div>
+                {{ form.attendance_days.label_tag }}
+                {{ form.attendance_days }}
+            </div>
+
+            <!-- Full-width Submit button -->
+            <div class="col-span-1 md:col-span-2 text-right">
+                <button type="submit" 
+                        class="px-4 py-2 bg-[#ff9b4b] text-white rounded hover:bg-[#7768ae]">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

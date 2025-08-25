@@ -1,0 +1,67 @@
+{% extends "payroll_app/base.html" %}
+{% block content %}
+{% load static %}
+
+<div class="min-h-screen bg-gray-50 flex items-center justify-center px-6">
+  <div class="max-w-4xl w-full bg-white rounded-2xl shadow-lg p-10">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-[#7768ae]">Unlock Premium Payslip Templates</h1>
+      <p class="text-gray-600 mt-2">Upgrade to access professional, customizable payslip designs.</p>
+    </div>
+
+    <!-- Premium Templates Preview -->
+    <div class="grid md:grid-cols-3 gap-6 mb-10">
+      <div class="bg-[#ef9cda]/10 border border-[#ef9cda] p-6 rounded-xl shadow-sm">
+        <h3 class="text-lg font-semibold text-[#ef9cda] mb-2">Modern Style</h3>
+        <img src="/static/images/template1.jpg" alt="Template 1" class="rounded-md shadow">
+      </div>
+      <div class="bg-[#00b9b9]/10 border border-[#00b9b9] p-6 rounded-xl shadow-sm">
+        <h3 class="text-lg font-semibold text-[#00b9b9] mb-2">Corporate Style</h3>
+        <img src="/static/images/template3.png" alt="Template 2" class="rounded-md shadow">
+      </div>
+      <div class="bg-[#ff9b4b]/10 border border-[#ff9b4b] p-6 rounded-xl shadow-sm">
+        <h3 class="text-lg font-semibold text-[#ff9b4b] mb-2">Creative Style</h3>
+        <img src="/static/images/Salary-Slip-Template-01.jpg" alt="Template 3" class="rounded-md shadow">
+      </div>
+    </div>
+
+    <!-- Pricing Section -->
+    <div class="text-center mb-6">
+      <h2 class="text-2xl font-bold text-[#7768ae]">Get All Templates for Just ₹299/month</h2>
+      <p class="text-gray-500">Cancel anytime. Secure payment.</p>
+    </div>
+
+    <!-- Upgrade Button -->
+    <div class="flex justify-center">
+      <form method="post" action="{% url 'upgrade_premium' %}">
+        {% csrf_token %}
+        <button type="submit"
+          class="px-8 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-[#00b9b9] via-[#7768ae] to-[#ff9b4b] shadow-md hover:shadow-xl transition duration-300">
+          Upgrade Now
+        </button>
+      </form>
+    </div>
+
+    <!-- Features List -->
+    <div class="mt-10 grid md:grid-cols-2 gap-6 text-gray-700">
+      <div class="flex items-start space-x-3">
+        <span class="text-[#00b9b9] font-bold">✔</span>
+        <p>Unlimited access to 5+ professional templates</p>
+      </div>
+      <div class="flex items-start space-x-3">
+        <span class="text-[#ff9b4b] font-bold">✔</span>
+        <p>Download in PDF format instantly</p>
+      </div>
+      <div class="flex items-start space-x-3">
+        <span class="text-[#7768ae] font-bold">✔</span>
+        <p>Custom branding with your company logo</p>
+      </div>
+      <div class="flex items-start space-x-3">
+        <span class="text-[#ef9cda] font-bold">✔</span>
+        <p>Email payslips directly to employees</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payroll System - Login</title>
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#ef9cda] flex items-center justify-center h-screen">
+
+    <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+        <h1 class="text-3xl font-bold text-center mb-6 text-[#7768ae]">Payroll System</h1>
+
+        {% if error %}
+            <p class="text-red-500 text-center mb-4">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST" action="{% url 'login' %}" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label for="username" class="block text-[#00b9b9] font-medium mb-1">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter username"
+                       class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#00b9b9]">
+            </div>
+
+            <div>
+                <label for="password" class="block text-[#00b9b9] font-medium mb-1">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter password"
+                       class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#00b9b9]">
+            </div>
+
+            <button type="submit"
+                    class="w-full py-2 bg-[#ff9b4b] text-white font-semibold rounded hover:bg-[#7768ae] transition duration-300">
+                Login
+            </button>
+        </form>
+
+        <p class="text-center mt-4 text-sm text-[#7768ae]">
+            <a href="#" class="hover:underline">Forgot Password?</a>
+        </p>
+    </div>
+
+</body>
+</html>
