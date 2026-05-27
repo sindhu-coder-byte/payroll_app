@@ -2,90 +2,177 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Payslip — {{ employee.name }}</title>
+    <title>Payslip &mdash; {{ employee.name }}</title>
     <style>
+        /* ── TEMPLATE 2: EXECUTIVE FORMAL ── */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Verdana', sans-serif; font-size: 12px; color: #0F172A; background: #fff; }
-        .page { max-width: 700px; margin: 0 auto; padding: 36px; }
+        body { font-family: Georgia, 'Times New Roman', serif; font-size: 12px; color: #0F172A; background: #fff; }
+        .page { max-width: 720px; margin: 0 auto; padding: 0; border: 1px solid #CBD5E1; }
 
-        .top-bar { background: #0D9488; height: 6px; border-radius: 4px 4px 0 0; }
-        .card { border: 1px solid #E2E8F0; border-top: none; padding: 28px; }
+        /* ── Formal Letterhead ── */
+        .letterhead { background: #0F172A; padding: 28px 36px 22px; display: flex; justify-content: space-between; align-items: flex-start; }
+        .lh-left .co-name  { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: 0.04em; }
+        .lh-left .co-sub   { font-size: 10px; color: #94A3B8; margin-top: 4px; font-style: italic; }
+        .lh-right          { text-align: right; }
+        .lh-right .doc-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #0D9488; }
+        .lh-right .doc-no    { font-size: 11px; color: #94A3B8; margin-top: 4px; }
+        .lh-right .doc-date  { font-size: 11px; color: #CBD5E1; margin-top: 2px; }
 
-        .heading-row { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 2px solid #E2E8F0; }
-        .company { font-size: 18px; font-weight: 700; color: #0D9488; }
-        .company-sub { font-size: 11px; color: #475569; margin-top: 3px; }
-        .payslip-info { text-align: right; }
-        .payslip-info .badge { display: inline-block; background: #F0FDF4; color: #16A34A; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 99px; border: 1px solid #BBF7D0; margin-bottom: 6px; }
-        .payslip-info .emp-id { font-size: 13px; font-weight: 600; color: #0F172A; }
+        /* Accent rule below letterhead */
+        .accent-bar { height: 3px; background: linear-gradient(to right, #0D9488 0%, #1E3A8A 50%, #0F172A 100%); }
 
-        .section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #0D9488; margin-bottom: 12px; padding-bottom: 4px; border-bottom: 1px solid #CCFBF1; }
+        /* ── Employee Block ── */
+        .emp-wrap { padding: 22px 36px; border-bottom: 1px solid #E2E8F0; background: #FAFBFF; }
+        .emp-title { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #475569; margin-bottom: 12px; }
+        .emp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 40px; }
+        .ef { display: flex; gap: 8px; align-items: baseline; }
+        .ef-key { font-size: 10px; color: #475569; min-width: 110px; }
+        .ef-sep { color: #CBD5E1; }
+        .ef-val { font-size: 12px; font-weight: 700; color: #0F172A; }
 
-        .info-row { display: flex; margin-bottom: 8px; }
-        .info-key { width: 160px; font-size: 11px; color: #475569; font-weight: 600; }
-        .info-val { font-size: 12px; color: #0F172A; font-weight: 600; }
+        /* ── Main salary area ── */
+        .main-wrap { padding: 24px 36px; }
 
-        .section { margin-bottom: 24px; }
+        /* Earnings / Deductions side-by-side */
+        .split { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1px; background: #CBD5E1; border: 1px solid #CBD5E1; margin-bottom: 0; }
+        .split-col { background: #fff; }
+        .split-col-head { padding: 9px 14px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
+        .split-col-head.earn   { background: #F0FDF4; color: #16A34A; border-bottom: 2px solid #16A34A; }
+        .split-col-head.deduct { background: #FFF1F2; color: #DC2626; border-bottom: 2px solid #DC2626; }
 
-        .salary-table { width: 100%; border-collapse: collapse; }
-        .salary-table th { background: #F0FDFA; font-size: 10px; font-weight: 700; color: #0D9488; text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 12px; text-align: left; border: 1px solid #CCFBF1; }
-        .salary-table td { padding: 9px 12px; border: 1px solid #E2E8F0; font-size: 12px; }
-        .salary-table .earn { color: #16A34A; font-weight: 600; }
-        .salary-table .deduct { color: #DC2626; font-weight: 600; }
+        .split-table { width: 100%; border-collapse: collapse; }
+        .split-table tr { border-bottom: 1px solid #F1F5F9; }
+        .split-table td { padding: 8px 14px; font-size: 11.5px; }
+        .split-table td:last-child { text-align: right; font-weight: 600; }
+        .split-table .stotal td { font-weight: 700; font-size: 12px; background: #F8FAFC; border-top: 1px solid #CBD5E1; }
+        .earn-c  { color: #16A34A; }
+        .deduct-c { color: #DC2626; }
 
-        .net-row { background: #0D9488; color: #fff; }
-        .net-row td { padding: 12px; font-weight: 700; font-size: 15px; border: none; }
+        /* ── Net Pay Banner ── */
+        .net-wrap { margin-top: 20px; border: 2px solid #0F172A; }
+        .net-inner { display: flex; }
+        .net-lhs { flex: 1; padding: 20px 24px; border-right: 2px solid #0F172A; }
+        .net-rhs { width: 200px; padding: 14px 18px; display: flex; flex-direction: column; justify-content: center; gap: 8px; background: #F8FAFC; }
+        .net-tag { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #475569; margin-bottom: 6px; }
+        .net-figure { font-size: 32px; font-weight: 900; color: #0F172A; line-height: 1; }
+        .net-words { font-size: 9px; color: #475569; font-style: italic; margin-top: 5px; }
+        .stat-row { display: flex; justify-content: space-between; font-size: 10px; color: #475569; }
+        .stat-row strong { color: #0F172A; font-weight: 700; }
 
-        .sig-section { display: flex; justify-content: space-between; margin-top: 32px; padding-top: 20px; border-top: 1px solid #E2E8F0; }
-        .sig { width: 40%; text-align: center; }
-        .sig-line { border-top: 1px solid #0F172A; margin-bottom: 6px; }
-        .sig-label { font-size: 10px; color: #475569; }
+        /* ── Declaration ── */
+        .decl { margin-top: 18px; padding: 10px 14px; background: #FFFBEB; border: 1px solid #FDE68A; font-size: 10px; color: #92400E; font-style: italic; text-align: center; }
 
-        .footer { text-align: center; font-size: 10px; color: #94A3B8; margin-top: 16px; }
+        /* ── Signatures ── */
+        .sig-wrap { display: flex; justify-content: space-between; margin-top: 28px; padding-top: 20px; border-top: 2px solid #0F172A; }
+        .sig-block { width: 40%; }
+        .sig-space { height: 36px; border-bottom: 1px solid #0F172A; margin-bottom: 6px; }
+        .sig-name  { font-size: 11px; font-weight: 700; }
+        .sig-role  { font-size: 9px; color: #475569; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+
+        /* ── Footer ── */
+        .footer-bar { background: #0F172A; padding: 10px 36px; display: flex; justify-content: space-between; align-items: center; }
+        .footer-bar span { font-size: 9px; color: #64748B; }
     </style>
 </head>
 <body>
 <div class="page">
-    <div class="top-bar"></div>
-    <div class="card">
-        <div class="heading-row">
-            <div>
-                <div class="company">PayrollPro</div>
-                <div class="company-sub">Payroll System Pvt. Ltd., Chennai, India</div>
-            </div>
-            <div class="payslip-info">
-                <div class="badge">✓ Calculated</div>
-                <div class="emp-id">EMP-{{ employee.id|stringformat:"04d" }}</div>
-            </div>
-        </div>
 
-        <div class="section">
-            <div class="section-title">Employee Details</div>
-            <div class="info-row"><div class="info-key">Name</div><div class="info-val">{{ employee.name }}</div></div>
-            <div class="info-row"><div class="info-key">Role</div><div class="info-val">{{ employee.role }}</div></div>
-            <div class="info-row"><div class="info-key">Department</div><div class="info-val">{{ employee.department }}</div></div>
-            <div class="info-row"><div class="info-key">Designation</div><div class="info-val">{{ employee.designation|default:"—" }}</div></div>
-            <div class="info-row"><div class="info-key">Join Date</div><div class="info-val">{{ employee.join_date|date:"d M Y" }}</div></div>
-            <div class="info-row"><div class="info-key">Working Days</div><div class="info-val">{{ employee.working_days }} days</div></div>
+    <!-- Letterhead -->
+    <div class="letterhead">
+        <div class="lh-left">
+            <div class="co-name">PayrollPro</div>
+            <div class="co-sub">Payroll System Pvt. Ltd. &nbsp;&middot;&nbsp; No. 12, Anna Salai, Chennai &ndash; 600 002, Tamil Nadu, India</div>
         </div>
-
-        <div class="section">
-            <div class="section-title">Salary Breakdown</div>
-            <table class="salary-table">
-                <tr><th>Component</th><th>Amount (₹)</th></tr>
-                <tr><td>Basic Salary</td><td>{{ employee.salary }}</td></tr>
-                <tr><td>Dearness Allowance (DA)</td><td class="earn">+ {{ employee.da }}</td></tr>
-                <tr><td>Bonus</td><td class="earn">+ {{ employee.bonus }}</td></tr>
-                <tr><td>Deductions</td><td class="deduct">- {{ employee.deduction }}</td></tr>
-                <tr class="net-row"><td>Net Pay</td><td>₹ {{ employee.net_salary }}</td></tr>
-            </table>
-        </div>
-
-        <div class="sig-section">
-            <div class="sig"><div class="sig-line"></div><div class="sig-label">Employee Signature</div></div>
-            <div class="sig"><div class="sig-line"></div><div class="sig-label">Authorised Signatory</div></div>
+        <div class="lh-right">
+            <div class="doc-title">Salary Slip</div>
+            <div class="doc-no">Ref: EMP-{{ employee.id|stringformat:"04d" }}</div>
+            <div class="doc-date">Period: {{ employee.join_date|date:"F Y" }}</div>
         </div>
     </div>
-    <div class="footer">Confidential — For official use only · PayrollPro &copy; {% now "Y" %}</div>
+    <div class="accent-bar"></div>
+
+    <!-- Employee Details -->
+    <div class="emp-wrap">
+        <div class="emp-title">Employee Details</div>
+        <div class="emp-grid">
+            <div class="ef"><span class="ef-key">Name</span><span class="ef-sep">:</span><span class="ef-val">{{ employee.name }}</span></div>
+            <div class="ef"><span class="ef-key">Designation</span><span class="ef-sep">:</span><span class="ef-val">{{ employee.designation|default:"&mdash;" }}</span></div>
+            <div class="ef"><span class="ef-key">Department</span><span class="ef-sep">:</span><span class="ef-val">{{ employee.department }}</span></div>
+            <div class="ef"><span class="ef-key">Role</span><span class="ef-sep">:</span><span class="ef-val">{{ employee.role }}</span></div>
+            <div class="ef"><span class="ef-key">Date of Joining</span><span class="ef-sep">:</span><span class="ef-val">{{ employee.join_date|date:"d M Y" }}</span></div>
+            <div class="ef"><span class="ef-key">Employment Status</span><span class="ef-sep">:</span><span class="ef-val">{{ employee.status }}</span></div>
+        </div>
+    </div>
+
+    <!-- Salary Split -->
+    <div class="main-wrap">
+        <div class="split">
+            <!-- Earnings -->
+            <div class="split-col">
+                <div class="split-col-head earn">Earnings</div>
+                <table class="split-table">
+                    <tr><td>Basic Salary</td><td class="earn-c">&#8377; {{ employee.salary }}</td></tr>
+                    <tr><td>Dearness Allowance (DA)</td><td class="earn-c">&#8377; {{ employee.da }}</td></tr>
+                    <tr><td>Performance Bonus</td><td class="earn-c">&#8377; {{ employee.bonus }}</td></tr>
+                    <tr class="stotal"><td>Total Earnings</td><td class="earn-c">&#8377; {{ employee.net_salary }}</td></tr>
+                </table>
+            </div>
+            <!-- Deductions -->
+            <div class="split-col">
+                <div class="split-col-head deduct">Deductions</div>
+                <table class="split-table">
+                    <tr><td>Provident Fund (PF)</td><td class="deduct-c">&mdash;</td></tr>
+                    <tr><td>Income Tax (TDS)</td><td class="deduct-c">&mdash;</td></tr>
+                    <tr><td>Other Deductions</td><td class="deduct-c">&#8377; {{ employee.deduction }}</td></tr>
+                    <tr class="stotal"><td>Total Deductions</td><td class="deduct-c">&#8377; {{ employee.deduction }}</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Net Pay -->
+        <div class="net-wrap">
+            <div class="net-inner">
+                <div class="net-lhs">
+                    <div class="net-tag">Net Salary Payable</div>
+                    <div class="net-figure">&#8377; {{ employee.net_salary }}</div>
+                    <div class="net-words">Rupees &mdash; as per payroll calculation for {{ employee.join_date|date:"F Y" }}</div>
+                </div>
+                <div class="net-rhs">
+                    <div class="stat-row"><span>Working Days</span><strong>{{ employee.working_days }}</strong></div>
+                    <div class="stat-row"><span>Leave Taken</span><strong>{{ employee.leave_days }}</strong></div>
+                    <div class="stat-row"><span>Work Hours</span><strong>{{ employee.work_hours }}h</strong></div>
+                    <div class="stat-row"><span>Pay Status</span><strong>{{ employee.status }}</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Declaration -->
+        <div class="decl">
+            This is a system-generated salary slip. No physical signature is required unless otherwise requested by management.
+        </div>
+
+        <!-- Signatures -->
+        <div class="sig-wrap">
+            <div class="sig-block">
+                <div class="sig-space"></div>
+                <div class="sig-name">{{ employee.name }}</div>
+                <div class="sig-role">Employee Acknowledgement</div>
+            </div>
+            <div class="sig-block" style="text-align:right;">
+                <div class="sig-space"></div>
+                <div class="sig-name">Authorised Signatory</div>
+                <div class="sig-role">HR &amp; Finance Department</div>
+            </div>
+        </div>
+    </div><!-- /main-wrap -->
+
+    <!-- Footer bar -->
+    <div class="footer-bar">
+        <span>Confidential &mdash; For official use only</span>
+        <span>PayrollPro &copy; {% now "Y" %}</span>
+        <span>Generated: {% now "d M Y" %}</span>
+    </div>
+
 </div>
 </body>
 </html>
