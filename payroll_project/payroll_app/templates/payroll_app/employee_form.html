@@ -1,98 +1,488 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ title }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-[#ef9cda]">
+{% extends 'payroll_app/base.html' %}
+{% block title %}{{ title }} — Payroll System{% endblock %}
 
-    <!-- Navbar -->
-    <nav class="bg-white shadow flex justify-between items-center px-6 py-3">
-        <div class="text-[#7768ae] font-bold text-xl">Payroll System</div>
-        <ul class="flex space-x-6 text-[#00b9b9] font-semibold">
-            <li><a href="{% url 'dashboard' %}" class="hover:text-[#ff9b4b]">Dashboard</a></li>
-            <li><a href="{% url 'employees' %}" class="hover:text-[#ff9b4b]">Employees</a></li>
-            <li><a href="{% url 'payroll' %}" class="hover:text-[#ff9b4b]">Payroll</a></li>
-            <li><a href="{% url 'payslip' %}" class="hover:text-[#ff9b4b]">Payslip</a></li>
-            <li><a href="#" class="hover:text-[#ff9b4b]">Reports</a></li>
-            <li><a href="#" class="hover:text-[#ff9b4b]">Logout</a></li>
-        </ul>
-    </nav>
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-8">
 
-    <div class="p-6">
-        <h2 class="text-[#7768ae] font-bold text-xl mb-4">{{ title }}</h2>
-
-        <form method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-6 rounded shadow">
-            {% csrf_token %}
-
-            <!-- Render each field manually -->
-            <div>
-                {{ form.name.label_tag }} 
-                {{ form.name }}
-            </div>
-            <div>
-                {{ form.role.label_tag }}
-                {{ form.role }}
-            </div>
-            <div>
-                {{ form.department.label_tag }}
-                {{ form.department }}
-            </div>
-            <div>
-                {{ form.salary.label_tag }}
-                {{ form.salary }}
-            </div>
-            <div>
-                {{ form.bonus.label_tag }}
-                {{ form.bonus }}
-            </div>
-            <div>
-                {{ form.da.label_tag }}
-                {{ form.da }}
-            </div>
-            <div>
-                {{ form.designation.label_tag }}
-                {{ form.designation }}
-            </div>
-            <div>
-                {{ form.join_date.label_tag }}
-                {{ form.join_date }}
-            </div>
-            <div>
-                {{ form.work_hours.label_tag }}
-                {{ form.work_hours }}
-            </div>
-            <div>
-                {{ form.working_days.label_tag }}
-                {{ form.working_days }}
-            </div>
-            <div>
-                {{ form.leave_days.label_tag }}
-                {{ form.leave_days }}
-            </div>
-            <div>
-                {{ form.deduction.label_tag }}
-                {{ form.deduction }}
-            </div>
-            <div>
-                {{ form.status.label_tag }}
-                {{ form.status }}
-            </div>
-             <div>
-                {{ form.attendance_days.label_tag }}
-                {{ form.attendance_days }}
-            </div>
-
-            <!-- Full-width Submit button -->
-            <div class="col-span-1 md:col-span-2 text-right">
-                <button type="submit" 
-                        class="px-4 py-2 bg-[#ff9b4b] text-white rounded hover:bg-[#7768ae]">
-                    Save
-                </button>
-            </div>
-        </form>
+    <!-- Page Header -->
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-[#7768ae]">{{ title }}</h1>
+            <p class="text-gray-500 text-sm mt-1">
+                {% if form.instance.id %}Update employee record{% else %}Register a new employee into the system{% endif %}
+            </p>
+        </div>
+        <a href="{% url 'employees' %}"
+           class="flex items-center gap-2 text-sm text-[#7768ae] border border-[#7768ae] px-4 py-2 rounded-lg hover:bg-[#7768ae] hover:text-white transition">
+            ← Back to Employees
+        </a>
     </div>
 
-</body>
-</html>
+    <!-- Non-field errors -->
+    {% if form.non_field_errors %}
+    <div class="bg-red-50 border border-red-300 text-red-700 rounded-lg p-4 mb-6">
+        {% for error in form.non_field_errors %}
+            <p class="text-sm">{{ error }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ── Profile Preview Card ── -->
+    <div class="bg-white rounded-2xl shadow-md p-6 mb-6 flex flex-wrap items-center gap-6">
+        <!-- Avatar -->
+        <div id="avatar-circle"
+             class="w-20 h-20 rounded-full bg-[#7768ae] flex items-center justify-center text-white text-3xl font-bold select-none shrink-0">
+            ?
+        </div>
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+            <div id="preview-name" class="text-xl font-bold text-gray-800 truncate">Employee Name</div>
+            <div id="preview-designation" class="text-[#00b9b9] text-sm mt-0.5">Designation · Department</div>
+            <div class="flex flex-wrap gap-2 mt-3">
+                <span id="preview-role-badge"
+                      class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-semibold">Role</span>
+                <span id="preview-status-badge"
+                      class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">Active</span>
+                <span id="preview-join-badge"
+                      class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">Joined: —</span>
+            </div>
+        </div>
+        <!-- Employee ID -->
+        <div class="text-right shrink-0">
+            <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Employee ID</div>
+            <div class="text-3xl font-extrabold text-[#ff9b4b]">
+                {% if form.instance.id %}
+                    EMP-{{ form.instance.id|stringformat:"04d" }}
+                {% else %}
+                    AUTO
+                {% endif %}
+            </div>
+            <div class="text-xs text-gray-400 mt-1">
+                {% if form.instance.id %}Existing record{% else %}Assigned on save{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <form method="POST" novalidate>
+        {% csrf_token %}
+
+        <!-- ── Section 1: Personal Information ── -->
+        <div class="bg-white rounded-2xl shadow-md p-6 mb-6">
+            <h3 class="text-base font-bold text-[#7768ae] mb-5 flex items-center gap-3">
+                <span class="w-7 h-7 rounded-full bg-[#7768ae] text-white text-sm flex items-center justify-center font-bold">1</span>
+                Personal Information
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                <!-- Name -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">
+                        Full Name <span class="text-red-400">*</span>
+                    </label>
+                    <input id="id_name" name="name" type="text"
+                           value="{{ form.name.value|default:'' }}"
+                           placeholder="e.g. Sindhu Balaji"
+                           class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7768ae] text-sm
+                                  {% if form.name.errors %}border-red-400 bg-red-50{% else %}border-gray-300{% endif %}">
+                    {% for e in form.name.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ e }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Designation -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Designation</label>
+                    <input id="id_designation" name="designation" type="text"
+                           value="{{ form.designation.value|default:'' }}"
+                           list="designation-list"
+                           placeholder="e.g. Senior Developer"
+                           class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7768ae] text-sm
+                                  {% if form.designation.errors %}border-red-400 bg-red-50{% else %}border-gray-300{% endif %}">
+                    <datalist id="designation-list">
+                        <option value="Junior Developer">
+                        <option value="Senior Developer">
+                        <option value="Team Lead">
+                        <option value="Manager">
+                        <option value="HR Executive">
+                        <option value="Accountant">
+                        <option value="Analyst">
+                        <option value="Director">
+                        <option value="Intern">
+                        <option value="Staff">
+                    </datalist>
+                    {% for e in form.designation.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ e }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Department -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">
+                        Department <span class="text-red-400">*</span>
+                    </label>
+                    <input id="id_department" name="department" type="text"
+                           value="{{ form.department.value|default:'' }}"
+                           list="department-list"
+                           placeholder="e.g. Engineering"
+                           class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7768ae] text-sm
+                                  {% if form.department.errors %}border-red-400 bg-red-50{% else %}border-gray-300{% endif %}">
+                    <datalist id="department-list">
+                        <option value="Engineering">
+                        <option value="Human Resources">
+                        <option value="Finance">
+                        <option value="Marketing">
+                        <option value="Sales">
+                        <option value="Operations">
+                        <option value="Legal">
+                        <option value="Product">
+                        <option value="Design">
+                        <option value="Administration">
+                    </datalist>
+                    {% for e in form.department.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ e }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Join Date -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">
+                        Join Date <span class="text-red-400">*</span>
+                    </label>
+                    <input id="id_join_date" name="join_date" type="date"
+                           value="{{ form.join_date.value|default:'' }}"
+                           class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7768ae] text-sm
+                                  {% if form.join_date.errors %}border-red-400 bg-red-50{% else %}border-gray-300{% endif %}">
+                    {% for e in form.join_date.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ e }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Status -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Status</label>
+                    <select id="id_status" name="status"
+                            class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7768ae] text-sm bg-white
+                                   {% if form.status.errors %}border-red-400 bg-red-50{% else %}border-gray-300{% endif %}">
+                        {% for val, label in form.fields.status.choices %}
+                            <option value="{{ val }}" {% if form.status.value == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    {% for e in form.status.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ e }}</p>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ── Section 2: Job Details ── -->
+        <div class="bg-white rounded-2xl shadow-md p-6 mb-6">
+            <h3 class="text-base font-bold text-[#00b9b9] mb-5 flex items-center gap-3">
+                <span class="w-7 h-7 rounded-full bg-[#00b9b9] text-white text-sm flex items-center justify-center font-bold">2</span>
+                Job Details
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                <!-- Role -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">
+                        Role <span class="text-red-400">*</span>
+                    </label>
+                    <input id="id_role" name="role" type="text"
+                           value="{{ form.role.value|default:'' }}"
+                           list="role-list"
+                           placeholder="e.g. Backend Developer"
+                           class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00b9b9] text-sm
+                                  {% if form.role.errors %}border-red-400 bg-red-50{% else %}border-gray-300{% endif %}">
+                    <datalist id="role-list">
+                        <option value="Backend Developer">
+                        <option value="Frontend Developer">
+                        <option value="Full Stack Developer">
+                        <option value="DevOps Engineer">
+                        <option value="Data Analyst">
+                        <option value="HR Manager">
+                        <option value="Payroll Officer">
+                        <option value="Finance Manager">
+                        <option value="Product Manager">
+                        <option value="QA Engineer">
+                    </datalist>
+                    {% for e in form.role.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ e }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Work Hours -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">
+                        Work Hours / Day <span class="text-red-400">*</span>
+                    </label>
+                    <input id="id_work_hours" name="work_hours" type="number" min="1" max="24"
+                           value="{{ form.work_hours.value|default:8 }}"
+                           class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00b9b9] text-sm
+                                  {% if form.work_hours.errors %}border-red-400 bg-red-50{% else %}border-gray-300{% endif %}">
+                    {% for e in form.work_hours.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ e }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Working Days -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">
+                        Working Days / Month <span class="text-red-400">*</span>
+                    </label>
+                    <input id="id_working_days" name="working_days" type="number" min="0" max="31"
+                           value="{{ form.working_days.value|default:26 }}"
+                           placeholder="e.g. 26"
+                           class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00b9b9] text-sm
+                                  {% if form.working_days.errors %}border-red-400 bg-red-50{% else %}border-gray-300{% endif %}">
+                    {% for e in form.working_days.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ e }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Leave Days -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Leave Days Taken</label>
+                    <input id="id_leave_days" name="leave_days" type="number" min="0"
+                           value="{{ form.leave_days.value|default:0 }}"
+                           class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00b9b9] text-sm
+                                  {% if form.leave_days.errors %}border-red-400 bg-red-50{% else %}border-gray-300{% endif %}">
+                    <p id="leave-warning" class="text-orange-500 text-xs mt-1 hidden">Leave days exceed working days.</p>
+                    {% for e in form.leave_days.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ e }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Attendance Days -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Attendance Days</label>
+                    <input id="id_attendance_days" name="attendance_days" type="number" min="0"
+                           value="{{ form.attendance_days.value|default:0 }}"
+                           class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00b9b9] text-sm border-gray-300">
+                    <p class="text-gray-400 text-xs mt-1">Actual days the employee attended work this month.</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ── Section 3: Compensation ── -->
+        <div class="bg-white rounded-2xl shadow-md p-6 mb-6">
+            <h3 class="text-base font-bold text-[#ff9b4b] mb-5 flex items-center gap-3">
+                <span class="w-7 h-7 rounded-full bg-[#ff9b4b] text-white text-sm flex items-center justify-center font-bold">3</span>
+                Compensation & Payroll
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                <!-- Basic Salary -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">
+                        Basic Salary (₹) <span class="text-red-400">*</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
+                        <input id="id_salary" name="salary" type="number" min="0" step="0.01"
+                               value="{{ form.salary.value|default:'' }}"
+                               placeholder="0.00"
+                               class="w-full pl-8 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff9b4b] text-sm
+                                      {% if form.salary.errors %}border-red-400 bg-red-50{% else %}border-gray-300{% endif %}">
+                    </div>
+                    {% for e in form.salary.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ e }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Bonus -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Bonus (₹)</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
+                        <input id="id_bonus" name="bonus" type="number" min="0" step="0.01"
+                               value="{{ form.bonus.value|default:0 }}"
+                               placeholder="0.00"
+                               class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff9b4b] text-sm">
+                    </div>
+                    {% for e in form.bonus.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ e }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- DA -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">
+                        Dearness Allowance — DA (₹)
+                        <span class="ml-1 text-gray-400 cursor-help" title="Government-mandated cost-of-living allowance">ⓘ</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
+                        <input id="id_da" name="da" type="number" min="0" step="0.01"
+                               value="{{ form.da.value|default:0 }}"
+                               placeholder="0.00"
+                               class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff9b4b] text-sm">
+                    </div>
+                    {% for e in form.da.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ e }}</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Deduction -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">
+                        Deduction (₹)
+                        <span class="ml-1 text-gray-400 cursor-help" title="Tax, PF, ESI or other deductions">ⓘ</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
+                        <input id="id_deduction" name="deduction" type="number" min="0" step="0.01"
+                               value="{{ form.deduction.value|default:0 }}"
+                               placeholder="0.00"
+                               class="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff9b4b] text-sm">
+                    </div>
+                    {% for e in form.deduction.errors %}
+                        <p class="text-red-500 text-xs mt-1">{{ e }}</p>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+            <!-- Net Salary Live Preview -->
+            <div class="mt-6 bg-gradient-to-r from-[#7768ae] to-[#00b9b9] rounded-xl p-5 text-white">
+                <div class="flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                        <div class="text-sm font-semibold opacity-80 mb-1">Estimated Net Salary</div>
+                        <div id="net-salary-display" class="text-4xl font-extrabold">₹ 0.00</div>
+                        <div class="text-xs opacity-70 mt-2">
+                            (Salary ÷ Working Days) × Present Days + Bonus + DA − Deduction
+                        </div>
+                    </div>
+                    <!-- Breakdown -->
+                    <div class="text-sm space-y-1 opacity-90">
+                        <div class="flex justify-between gap-6">
+                            <span>Earned Salary</span>
+                            <span id="breakdown-earned" class="font-semibold">₹ 0.00</span>
+                        </div>
+                        <div class="flex justify-between gap-6">
+                            <span>+ Bonus</span>
+                            <span id="breakdown-bonus" class="font-semibold">₹ 0.00</span>
+                        </div>
+                        <div class="flex justify-between gap-6">
+                            <span>+ DA</span>
+                            <span id="breakdown-da" class="font-semibold">₹ 0.00</span>
+                        </div>
+                        <div class="flex justify-between gap-6 border-t border-white/30 pt-1">
+                            <span>− Deduction</span>
+                            <span id="breakdown-deduction" class="font-semibold text-red-200">₹ 0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ── Actions ── -->
+        <div class="flex items-center justify-between">
+            <a href="{% url 'employees' %}"
+               class="px-6 py-2.5 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-100 text-sm transition">
+                Cancel
+            </a>
+            <button type="submit"
+                    class="px-8 py-2.5 bg-[#ff9b4b] text-white font-bold rounded-lg hover:bg-[#7768ae] transition text-sm shadow">
+                {% if form.instance.id %}Update Employee{% else %}Save Employee{% endif %}
+            </button>
+        </div>
+
+    </form>
+</div>
+
+<!-- ── Live JavaScript ── -->
+<script>
+    // --- Avatar & profile preview ---
+    const nameInput        = document.getElementById('id_name');
+    const designInput      = document.getElementById('id_designation');
+    const deptInput        = document.getElementById('id_department');
+    const roleInput        = document.getElementById('id_role');
+    const statusSelect     = document.getElementById('id_status');
+    const joinInput        = document.getElementById('id_join_date');
+
+    const avatarCircle     = document.getElementById('avatar-circle');
+    const previewName      = document.getElementById('preview-name');
+    const previewDesig     = document.getElementById('preview-designation');
+    const previewRoleBadge = document.getElementById('preview-role-badge');
+    const previewStsBadge  = document.getElementById('preview-status-badge');
+    const previewJoinBadge = document.getElementById('preview-join-badge');
+
+    const STATUS_COLORS = {
+        'Active':   'bg-green-100 text-green-700',
+        'Inactive': 'bg-red-100 text-red-700',
+        'On Leave': 'bg-yellow-100 text-yellow-700',
+    };
+
+    function initials(name) {
+        return name.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase() || '?';
+    }
+
+    function updatePreview() {
+        const name   = nameInput.value.trim();
+        const desig  = designInput.value.trim();
+        const dept   = deptInput.value.trim();
+        const role   = roleInput.value.trim();
+        const status = statusSelect.value;
+        const join   = joinInput.value;
+
+        avatarCircle.textContent = initials(name);
+        previewName.textContent  = name || 'Employee Name';
+        previewDesig.textContent = [desig, dept].filter(Boolean).join(' · ') || 'Designation · Department';
+        previewRoleBadge.textContent = role || 'Role';
+
+        previewStsBadge.className = 'px-3 py-1 rounded-full text-xs font-semibold ' + (STATUS_COLORS[status] || 'bg-gray-100 text-gray-600');
+        previewStsBadge.textContent = status || 'Status';
+
+        previewJoinBadge.textContent = join ? 'Joined: ' + join : 'Joined: —';
+    }
+
+    [nameInput, designInput, deptInput, roleInput, joinInput].forEach(el => el.addEventListener('input', updatePreview));
+    statusSelect.addEventListener('change', updatePreview);
+    updatePreview(); // run on load for edit form
+
+    // --- Live Net Salary Calculator ---
+    const salaryInput   = document.getElementById('id_salary');
+    const bonusInput    = document.getElementById('id_bonus');
+    const daInput       = document.getElementById('id_da');
+    const deductInput   = document.getElementById('id_deduction');
+    const wdInput       = document.getElementById('id_working_days');
+    const ldInput       = document.getElementById('id_leave_days');
+    const leaveWarning  = document.getElementById('leave-warning');
+
+    const netDisplay    = document.getElementById('net-salary-display');
+    const brkEarned     = document.getElementById('breakdown-earned');
+    const brkBonus      = document.getElementById('breakdown-bonus');
+    const brkDA         = document.getElementById('breakdown-da');
+    const brkDeduction  = document.getElementById('breakdown-deduction');
+
+    function fmt(n) { return '₹ ' + n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+    function calcNetSalary() {
+        const salary      = parseFloat(salaryInput.value)  || 0;
+        const bonus       = parseFloat(bonusInput.value)   || 0;
+        const da          = parseFloat(daInput.value)      || 0;
+        const deduction   = parseFloat(deductInput.value)  || 0;
+        const workingDays = parseInt(wdInput.value)        || 0;
+        const leaveDays   = parseInt(ldInput.value)        || 0;
+
+        // Warn if leave > working days
+        leaveWarning.classList.toggle('hidden', leaveDays <= workingDays);
+
+        const presentDays = Math.max(workingDays - leaveDays, 0);
+        const earnedSalary = workingDays > 0 ? (salary / workingDays) * presentDays : salary;
+        const net = earnedSalary + bonus + da - deduction;
+
+        netDisplay.textContent    = fmt(Math.max(net, 0));
+        brkEarned.textContent     = fmt(earnedSalary);
+        brkBonus.textContent      = fmt(bonus);
+        brkDA.textContent         = fmt(da);
+        brkDeduction.textContent  = fmt(deduction);
+    }
+
+    [salaryInput, bonusInput, daInput, deductInput, wdInput, ldInput].forEach(el => el.addEventListener('input', calcNetSalary));
+    calcNetSalary(); // run on load for edit form
+</script>
+{% endblock %}
