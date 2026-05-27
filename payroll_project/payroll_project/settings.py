@@ -26,7 +26,15 @@ SECRET_KEY = 'django-insecure-eoengm0)6clnie_-b@id-2wq($)*#mtm-e&*%evjpia11tz(!1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    '0.0.0.0',
+    '[::1]',
+]
+
+
+
 
 
 # Application definition
@@ -153,17 +161,22 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-import os
-import dj_database_url
+# Redirect unauthenticated users to the login page
+LOGIN_URL = 'login'
 
-DEBUG = False
+# ------------------------------------------------------------------
+# Production overrides (Render / any host that sets DATABASE_URL)
+# ------------------------------------------------------------------
+import dj_database_url as _dj_db_url
 
-ALLOWED_HOSTS = ["your-app-name.onrender.com"]  # change to your Render app name
-
-DATABASES = {
-    "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL"), 
-        conn_max_age=600, 
-        ssl_require=True
-    )
-}
+_DATABASE_URL = os.environ.get("DATABASE_URL")
+if _DATABASE_URL:
+    DEBUG = False
+    ALLOWED_HOSTS += ["your-app-name.onrender.com"]  # update to your Render app name
+    DATABASES = {
+        "default": _dj_db_url.config(
+            default=_DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True,
+        )
+    }

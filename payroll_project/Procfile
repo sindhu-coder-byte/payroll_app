@@ -1,1 +1,2 @@
-web: gunicorn payroll_app.wsgi
+web: gunicorn payroll_project.wsgi:application
+
