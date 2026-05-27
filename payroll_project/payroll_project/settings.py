@@ -13,18 +13,15 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Read from environment variables; fall back to dev-only defaults
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure-eoengm0)6clnie_-b@id-2wq($)*#mtm-e&*%evjpia11tz(!1'
+)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-eoengm0)6clnie_-b@id-2wq($)*#mtm-e&*%evjpia11tz(!1'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
@@ -32,6 +29,11 @@ ALLOWED_HOSTS = [
     '0.0.0.0',
     '[::1]',
 ]
+
+# Add any extra hosts from the ALLOWED_HOSTS env var (comma-separated)
+_extra_hosts = os.environ.get('ALLOWED_HOSTS', '')
+if _extra_hosts:
+    ALLOWED_HOSTS += [h.strip() for h in _extra_hosts.split(',') if h.strip()]
 
 
 
@@ -152,9 +154,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+
+_static_dir = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [_static_dir] if os.path.isdir(_static_dir) else []
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -171,8 +173,6 @@ import dj_database_url as _dj_db_url
 
 _DATABASE_URL = os.environ.get("DATABASE_URL")
 if _DATABASE_URL:
-    DEBUG = False
-    ALLOWED_HOSTS += ["your-app-name.onrender.com"]  # update to your Render app name
     DATABASES = {
         "default": _dj_db_url.config(
             default=_DATABASE_URL,
