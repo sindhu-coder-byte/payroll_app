@@ -12,8 +12,12 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load .env from the project root (same folder as manage.py)
+load_dotenv(BASE_DIR / '.env')
 
 # Read from environment variables; fall back to dev-only defaults
 SECRET_KEY = os.environ.get(
@@ -107,13 +111,13 @@ WSGI_APPLICATION = 'payroll_project.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-   'default': {
+    'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'payroll_db',
-        'USER': 'root',
-        'PASSWORD': 'Root@123',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': os.environ.get('DB_NAME', 'payroll_db'),
+        'USER': os.environ.get('DB_USER', 'root'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
     }
 }
 
