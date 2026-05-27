@@ -1,246 +1,259 @@
 {% extends "payroll_app/base.html" %}
-
-{% block title %}Dashboard{% endblock %}
+{% block title %}Dashboard — PayrollPro{% endblock %}
 
 {% block content %}
+<div class="max-w-7xl mx-auto px-6 py-8">
 
-<div class="flex justify-between items-center p-6">
-    <div class="flex items-center space-x-2 text-[#7768ae] font-semibold text-lg">
-        <!-- User icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-             viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M5.121 17.804A9 9 0 1112 21a9 9 0 01-6.879-3.196z"/>
-        </svg>
-        <span>Welcome, Admin</span>
-    </div>
-
-    <div class="flex items-center space-x-4">
-        <!-- Search input -->
-        <div class="flex items-center border rounded focus-within:ring-2 focus-within:ring-[#00b9b9]">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 text-gray-400"
-                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
-            <input type="text" placeholder="Search..."
-                   class="px-2 py-1 focus:outline-none">
+    <!-- ── Page Header ── -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-[#0F172A]">Dashboard</h1>
+            <p class="text-[#475569] text-sm mt-0.5">{{ current_month }} — Payroll Overview</p>
         </div>
-        <!-- Notification -->
-        <div class="bg-[#ff9b4b] text-white px-3 py-1 rounded flex items-center space-x-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-            </svg>
-            <span>3</span>
+        <div class="flex items-center gap-3">
+            <!-- Search -->
+            <div class="relative">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <input type="text" placeholder="Search…"
+                       class="pl-9 pr-4 py-2 text-sm border border-[#E2E8F0] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A]">
+            </div>
+            <!-- Month nav -->
+            <div class="flex items-center gap-2 bg-white border border-[#E2E8F0] rounded-lg px-3 py-2">
+                <button id="prevMonth" class="text-[#475569] hover:text-[#1E3A8A] transition">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <span id="monthDisplay" class="text-sm font-semibold text-[#0F172A] min-w-[120px] text-center"></span>
+                <button id="nextMonth" class="text-[#475569] hover:text-[#1E3A8A] transition">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+            <a href="{% url 'add_employee' %}"
+               class="flex items-center gap-2 px-4 py-2 bg-[#1E3A8A] text-white text-sm font-semibold rounded-lg hover:bg-[#1e40af] transition">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                Add Employee
+            </a>
         </div>
     </div>
 
+    <!-- ── KPI Cards ── -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
 
-    <!-- Month selector navigation -->
-<div class="flex items-center space-x-3">
-    <button id="prevMonth" class="px-2 py-1 bg-[#7768ae] text-white rounded">◀</button>
-    <span id="monthDisplay" class="text-[#7768ae] font-semibold"></span>
-    <button id="nextMonth" class="px-2 py-1 bg-[#7768ae] text-white rounded">▶</button>
+        <!-- Total Employees -->
+        <div class="bg-white rounded-xl border border-[#E2E8F0] p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-sm font-semibold text-[#475569]">Total Employees</span>
+                <div class="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-[#1E3A8A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="text-3xl font-extrabold text-[#0F172A]">{{ total_employees }}</div>
+            <p class="text-xs text-[#475569] mt-1">Active workforce</p>
+        </div>
+
+        <!-- Hired This Month -->
+        <div class="bg-white rounded-xl border border-[#E2E8F0] p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-sm font-semibold text-[#475569]">Hired This Month</span>
+                <div class="w-9 h-9 bg-green-50 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-[#16A34A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="text-3xl font-extrabold text-[#16A34A]">{{ hired_candidates }}</div>
+            <p class="text-xs text-[#475569] mt-1">New joiners in {{ current_month }}</p>
+        </div>
+
+        <!-- Payroll Runs -->
+        <div class="bg-white rounded-xl border border-[#E2E8F0] p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-sm font-semibold text-[#475569]">Payroll Runs</span>
+                <div class="w-9 h-9 bg-amber-50 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-[#D97706]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="text-3xl font-extrabold text-[#0F172A]">1</div>
+            <p class="text-xs text-[#475569] mt-1">Scheduled this month</p>
+        </div>
+
+        <!-- NET SALARY — Most prominent -->
+        <div class="bg-[#1E3A8A] rounded-xl p-5 shadow-md">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-sm font-semibold text-blue-200">Total Net Payroll</span>
+                <div class="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="text-3xl font-extrabold text-white">₹{{ net_salary_total|floatformat:0 }}</div>
+            <p class="text-xs text-blue-200 mt-1">Total payout this cycle</p>
+        </div>
+    </div>
+
+    <!-- ── Calendar + Meeting Scheduler ── -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+
+        <!-- Calendar -->
+        <div class="lg:col-span-2 bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6">
+            <h2 id="calendarTitle" class="text-base font-bold text-[#0F172A] mb-4"></h2>
+            <div id="calendar" class="grid grid-cols-7 gap-1 text-sm"></div>
+        </div>
+
+        <!-- Schedule Meeting -->
+        <div class="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6">
+            <h2 class="text-base font-bold text-[#0F172A] mb-1">Schedule Meeting</h2>
+            <p class="text-xs text-[#475569] mb-4">Click a calendar day to pre-fill the date.</p>
+            <form method="POST" action="{% url 'add_meeting' %}" class="space-y-3">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-xs font-semibold text-[#475569] mb-1">Date & Time</label>
+                    <input type="datetime-local" name="meeting_time"
+                           class="w-full px-3 py-2 text-sm border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E3A8A]">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-[#475569] mb-1">Agenda</label>
+                    <textarea name="meeting_info" rows="3" placeholder="Meeting agenda…"
+                              class="w-full px-3 py-2 text-sm border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] resize-none"></textarea>
+                </div>
+                <button type="submit"
+                        class="w-full py-2 bg-[#0D9488] text-white text-sm font-semibold rounded-lg hover:bg-teal-700 transition">
+                    Schedule Meeting
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ── Salary Distribution Chart ── -->
+    <div class="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-6">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 class="text-base font-bold text-[#0F172A]">Salary Distribution</h2>
+                <p class="text-xs text-[#475569] mt-0.5">Net salary per employee this cycle</p>
+            </div>
+            <span class="text-xs bg-blue-50 text-[#1E3A8A] font-semibold px-3 py-1 rounded-full">{{ current_month }}</span>
+        </div>
+        <canvas id="salaryChart" style="max-height:280px;"></canvas>
+    </div>
+
 </div>
 
-</div>
-
-<!-- Stats Cards with flat icons -->
-<div class="grid grid-cols-4 gap-6 px-6 mb-6">
-    <div class="bg-white p-4 rounded shadow text-center flex flex-col items-center justify-center space-y-1">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#00b9b9]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-        </svg>
-        <h2 class="text-[#00b9b9] font-semibold">Total Employees</h2>
-        <p class="text-2xl font-bold">{{ total_employees }}</p>
-    </div>
-
-    <div class="bg-white p-4 rounded shadow text-center flex flex-col items-center justify-center space-y-1">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#ff9b4b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        <h2 class="text-[#00b9b9] font-semibold">Add New Employee</h2>
-        <a href="{% url 'add_employee' %}" class="mt-2 px-3 py-1 bg-[#ff9b4b] text-white rounded hover:bg-[#7768ae] inline-block">Add</a>
-    </div>
-
-    <div class="bg-white p-4 rounded shadow text-center flex flex-col items-center justify-center space-y-1">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#00b9b9]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4" />
-        </svg>
-        <h2 class="text-[#00b9b9] font-semibold">Hired Candidates</h2>
-        <p class="text-2xl font-bold">12</p>
-    </div>
-
-    <div class="bg-white p-4 rounded shadow text-center flex flex-col items-center justify-center space-y-1">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#00b9b9]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-3 0-5 2-5 5s2 5 5 5 5-2 5-5-2-5-5-5z" />
-        </svg>
-        <h2 class="text-[#00b9b9] font-semibold">Net Salary</h2>
-        <p class="text-2xl font-bold">₹{{ net_salary_total }}</p>
-    </div>
-</div>
-
-
-<!-- Calendar & Schedule Meeting -->
-<div class="grid grid-cols-3 gap-6 px-6 mb-6">
-    <div class="col-span-2 bg-white p-4 rounded shadow">
-          <h2 id="calendarTitle" class="text-[#7768ae] font-semibold mb-2"></h2>
-        <div id="calendar" class="grid grid-cols-7 gap-1"></div>
-    </div>
-    <div class="bg-white p-4 rounded shadow">
-        <h2 class="text-[#7768ae] font-semibold mb-2">Schedule Meeting</h2>
-        <form method="POST" action="{% url 'add_meeting' %}" class="space-y-3">
-            {% csrf_token %}
-            <input type="datetime-local" name="meeting_time" class="w-full px-3 py-1 border rounded focus:ring-2 focus:ring-[#00b9b9]">
-            <textarea name="meeting_info" placeholder="Meeting Info" class="w-full px-3 py-1 border rounded focus:ring-2 focus:ring-[#00b9b9]"></textarea>
-            <button type="submit" class="w-full py-1 bg-[#ff9b4b] text-white rounded hover:bg-[#7768ae]">Schedule</button>
-        </form>
-    </div>
-</div>
-
-<!-- Salary Distribution Chart -->
-<div class="px-6 mb-6 bg-white p-4 rounded shadow">
-    <h2 class="text-[#7768ae] font-semibold mb-2">Salary Distribution</h2>
-    <canvas id="salaryChart" class="h-64 w-full"></canvas>
-</div>
-
-<!-- JSON-safe meetings and chart data -->
 {{ meetings_by_date|json_script:"meetings-data" }}
-{{ chart_data|json_script:"chart-data" }}
+{{ employee_names|json_script:"emp-names" }}
+{{ employee_salaries|json_script:"emp-salaries" }}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Parse meetings from JSON
-let meetingsByDate = JSON.parse(document.getElementById('meetings-data').textContent);
-const ctx = document.getElementById('salaryChart').getContext('2d');
+const meetingsByDate = JSON.parse(document.getElementById('meetings-data').textContent);
+const empNames       = JSON.parse(document.getElementById('emp-names').textContent);
+const empSalaries    = JSON.parse(document.getElementById('emp-salaries').textContent);
 
-const employeeNames = ['Alice', 'Bob', 'Charlie', 'David', 'Eva'];
-const employeeSalaries = [50000, 60000, 45000, 70000, 55000];
-
-// Helper: format date as YYYY-MM-DD
-function formatDateLocal(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-
-// Track selected date
 let currentDate = new Date();
 
-// Render calendar function
-function renderCalendar(selectedYear, selectedMonth) {
-    const calendarEl = document.getElementById('calendar');
-    calendarEl.innerHTML = '';
+function fmt(date) {
+    return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
 
-    const year = selectedYear;
-    const month = selectedMonth;
+function renderCalendar(year, month) {
+    const cal   = document.getElementById('calendar');
+    const opts  = { month:'long', year:'numeric' };
+    cal.innerHTML = '';
+    document.getElementById('calendarTitle').textContent =
+        new Date(year, month, 1).toLocaleDateString('en-US', opts);
+    document.getElementById('monthDisplay').textContent =
+        new Date(year, month, 1).toLocaleDateString('en-US', opts);
 
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-
-    // Update top month display
-    const options = { month: "long", year: "numeric" };
-    document.getElementById("monthDisplay").textContent =
-        currentDate.toLocaleDateString("en-US", options);
-
-    // Weekdays header
-    ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(day => {
-        const dayEl = document.createElement('div');
-        dayEl.classList.add('font-bold','text-center');
-        dayEl.textContent = day;
-        calendarEl.appendChild(dayEl);
+    ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d => {
+        const el = document.createElement('div');
+        el.className = 'text-center text-xs font-bold text-[#475569] py-1';
+        el.textContent = d;
+        cal.appendChild(el);
     });
 
-    // Empty slots before first day
-    for (let i = 0; i < firstDay.getDay(); i++) {
-        calendarEl.appendChild(document.createElement('div'));
-    }
+    const firstDay = new Date(year, month, 1).getDay();
+    const lastDate = new Date(year, month+1, 0).getDate();
+    const today    = new Date();
 
-    // Days
-    for (let d = 1; d <= lastDay.getDate(); d++) {
-        const dateObj = new Date(year, month, d);
-        const dateStr = formatDateLocal(dateObj);
+    for (let i = 0; i < firstDay; i++) cal.appendChild(document.createElement('div'));
 
-        const dayEl = document.createElement('div');
-        dayEl.classList.add('border','p-1','h-20','overflow-auto','rounded','cursor-pointer');
+    for (let d = 1; d <= lastDate; d++) {
+        const dateStr  = fmt(new Date(year, month, d));
+        const isToday  = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+        const hasMeet  = !!meetingsByDate[dateStr];
 
-        const dayNumber = document.createElement('div');
-        dayNumber.classList.add('font-bold','text-sm');
-        dayNumber.textContent = d;
-        dayEl.appendChild(dayNumber);
+        const cell = document.createElement('div');
+        cell.className = `relative border border-[#E2E8F0] rounded-lg p-1 min-h-[52px] cursor-pointer
+            hover:border-[#1E3A8A] hover:bg-blue-50 transition text-xs
+            ${isToday ? 'bg-[#1E3A8A] border-[#1E3A8A]' : 'bg-white'}`;
 
-        // Show meetings
-        if (meetingsByDate[dateStr]) {
+        const num = document.createElement('div');
+        num.className = `font-bold ${isToday ? 'text-white' : 'text-[#0F172A]'}`;
+        num.textContent = d;
+        cell.appendChild(num);
+
+        if (hasMeet) {
+            const dot = document.createElement('div');
+            dot.className = 'w-1.5 h-1.5 rounded-full bg-[#D97706] absolute top-1.5 right-1.5';
+            cell.appendChild(dot);
             meetingsByDate[dateStr].forEach(info => {
-                const meetingEl = document.createElement('div');
-                meetingEl.classList.add('bg-[#ff9b4b]','text-white','text-xs','rounded','my-1','px-1');
-                meetingEl.textContent = info;
-                dayEl.appendChild(meetingEl);
+                const m = document.createElement('div');
+                m.className = 'bg-[#0D9488] text-white text-[10px] rounded px-1 py-0.5 mt-0.5 truncate';
+                m.textContent = info;
+                cell.appendChild(m);
             });
         }
 
-        // Click day → update meeting form + top text
-        dayEl.addEventListener('click', () => {
-            const inputEl = document.querySelector('input[name="meeting_time"]');
-            inputEl.value = dateStr + 'T09:00';
-
-            document.getElementById("monthDisplay").textContent =
-                `${currentDate.toLocaleDateString("en-US", options)} - Selected: ${d}`;
+        cell.addEventListener('click', () => {
+            document.querySelector('input[name="meeting_time"]').value = dateStr + 'T09:00';
         });
-
-        calendarEl.appendChild(dayEl);
+        cal.appendChild(cell);
     }
 }
 
-// Helpers to render current
-function renderCalendarForCurrent() {
-    renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
-}
-
-// Arrow buttons
-document.getElementById("prevMonth").addEventListener("click", () => {
+document.getElementById('prevMonth').addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() - 1);
-    renderCalendarForCurrent();
+    renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
 });
-
-document.getElementById("nextMonth").addEventListener("click", () => {
+document.getElementById('nextMonth').addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
-    renderCalendarForCurrent();
+    renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
 });
+renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
 
-// Initial render
-renderCalendarForCurrent();
-
-
-// Salary chart
-new Chart(ctx, {
+// Chart
+new Chart(document.getElementById('salaryChart').getContext('2d'), {
     type: 'bar',
     data: {
-        labels: employeeNames,
+        labels: empNames.length ? empNames : ['No data'],
         datasets: [{
-            label: 'Net Salary',
-            data: employeeSalaries,
-            backgroundColor: 'rgba(0, 185, 185, 0.7)',
-            borderColor: 'rgba(0, 185, 185, 1)',
-            borderWidth: 1
+            label: 'Net Salary (₹)',
+            data:  empSalaries.length ? empSalaries : [0],
+            backgroundColor: '#1E3A8A',
+            borderRadius: 6,
+            borderSkipped: false,
         }]
     },
     options: {
         responsive: true,
-        plugins: { legend: { display: false } },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: { stepSize: 10000 }
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ' ₹' + Number(ctx.raw).toLocaleString('en-IN')
+                }
             }
+        },
+        scales: {
+            x: { grid: { display: false }, ticks: { color: '#475569', font: { size: 12 } } },
+            y: { beginAtZero: true, grid: { color: '#F1F5F9' }, ticks: { color: '#475569', callback: v => '₹' + v.toLocaleString('en-IN') } }
         }
     }
 });
 </script>
-
-
-
 {% endblock %}

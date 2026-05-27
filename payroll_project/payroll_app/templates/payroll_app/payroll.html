@@ -1,92 +1,113 @@
 {% extends "payroll_app/base.html" %}
-
-{% block title %}Payroll Run{% endblock %}
+{% block title %}Payroll Run — PayrollPro{% endblock %}
 
 {% block content %}
-<div class="p-6">
-    <h2 class="text-[#7768ae] font-bold text-2xl mb-6 flex items-center space-x-2">
-        <img src="https://img.icons8.com/ios-filled/24/7768ae/payroll.png" alt="Payroll Icon"/>
-        <span>Payroll Run</span>
-    </h2>
+<div class="max-w-7xl mx-auto px-6 py-8">
 
-    <!-- Month Selection & Run Payroll -->
-    <form method="POST" class="flex flex-wrap space-x-4 mb-6 items-center">
-        {% csrf_token %}
-        <select name="month" class="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#00b9b9]">
-            <option value="">Select Month</option>
-            {% for month in months %}
-                <option value="{{ month }}" {% if month == selected_month %}selected{% endif %}>{{ month }}</option>
-            {% endfor %}
-        </select>
-    
-        <input type="text" id="employeeFilter" placeholder="Filter by name/role..." 
-               class="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#00b9b9] mt-2 sm:mt-0">
-    </form>
+    <!-- Header -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-[#0F172A]">Payroll Run</h1>
+            <p class="text-[#475569] text-sm mt-0.5">Review and process monthly payroll for all employees.</p>
+        </div>
+        <form method="POST" class="flex items-center gap-3">
+            {% csrf_token %}
+            <select name="month"
+                    class="px-4 py-2 text-sm border border-[#E2E8F0] rounded-lg bg-white text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1E3A8A]">
+                <option value="">Select Month</option>
+                {% for month in months %}
+                    <option value="{{ month }}" {% if month == selected_month %}selected{% endif %}>{{ month }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit"
+                    class="px-4 py-2 bg-[#1E3A8A] text-white text-sm font-semibold rounded-lg hover:bg-[#1e40af] transition">
+                Run Payroll
+            </button>
+        </form>
+    </div>
 
-    <!-- Employee Payroll Table -->
-    <div class="bg-white p-4 rounded shadow overflow-x-auto">
-        <table class="min-w-full table-auto" id="payrollTable">
-            <thead class="bg-[#00b9b9] text-white">
+    {% if selected_month %}
+    <div class="flex items-center gap-2 mb-6 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-[#D97706] font-medium">
+        <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Showing payroll for <strong>{{ selected_month }}</strong>
+    </div>
+    {% endif %}
+
+    <!-- Filter + summary row -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+        <div class="relative">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input type="text" id="employeeFilter" placeholder="Filter by name or role…"
+                   class="pl-9 pr-4 py-2 text-sm border border-[#E2E8F0] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] w-64">
+        </div>
+        <div class="text-sm text-[#475569]">{{ employees|length }} employee{{ employees|length|pluralize }}</div>
+    </div>
+
+    <!-- Payroll Table -->
+    <div class="bg-white rounded-xl border border-[#E2E8F0] shadow-sm overflow-x-auto">
+        <table class="min-w-full divide-y divide-[#E2E8F0]" id="payrollTable">
+            <thead class="bg-[#F8FAFC]">
                 <tr>
-                    <th class="px-4 py-2">ID</th>
-                    <th class="px-4 py-2">Name</th>
-                    <th class="px-4 py-2">Role</th>
-                    <th class="px-4 py-2">Base Salary</th>
-                    <th class="px-4 py-2">Bonus</th>
-                    <th class="px-4 py-2">Deductions</th>
-                        <th class="px-4 py-2">Net Salary</th>
-                    <th class="px-4 py-2">Status</th>
+                    <th class="px-6 py-3.5 text-left text-xs font-bold text-[#475569] uppercase tracking-wider">Employee</th>
+                    <th class="px-6 py-3.5 text-left text-xs font-bold text-[#475569] uppercase tracking-wider">Role</th>
+                    <th class="px-6 py-3.5 text-right text-xs font-bold text-[#475569] uppercase tracking-wider">Base Salary</th>
+                    <th class="px-6 py-3.5 text-right text-xs font-bold text-[#475569] uppercase tracking-wider">Bonus</th>
+                    <th class="px-6 py-3.5 text-right text-xs font-bold text-[#475569] uppercase tracking-wider">Deductions</th>
+                    <th class="px-6 py-3.5 text-right text-xs font-bold text-[#475569] uppercase tracking-wider">Net Pay</th>
+                    <th class="px-6 py-3.5 text-center text-xs font-bold text-[#475569] uppercase tracking-wider">Status</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-[#E2E8F0]">
                 {% for emp in employees %}
-                <tr class="text-center border-b hover:bg-gray-50 transition">
-                    <td class="px-4 py-2">{{ emp.id }}</td>
+                <tr class="hover:bg-[#F8FAFC] transition">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-[#1E3A8A] flex items-center justify-center text-white text-xs font-bold shrink-0">
+                                {{ emp.name|slice:":1"|upper }}
+                            </div>
+                            <div class="text-sm font-semibold text-[#0F172A]">{{ emp.name }}</div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-[#475569]">{{ emp.role }}</td>
+                    <td class="px-6 py-4 text-right text-sm text-[#0F172A]">₹{{ emp.salary }}</td>
+                    <td class="px-6 py-4 text-right text-sm text-[#16A34A]">+₹{{ emp.bonus }}</td>
+                    <td class="px-6 py-4 text-right text-sm text-[#DC2626]">-₹{{ emp.deduction }}</td>
 
-                    <td class="px-4 py-2">
-                        <div class= "flex items-center space-x-1 justify-center">
-                        <img src="https://img.icons8.com/ios-glyphs/20/7768ae/user.png" alt="User Icon"/>
-                        <span>{{ emp.name }}</span>
+                    <!-- NET PAY — most prominent column -->
+                    <td class="px-6 py-4 text-right">
+                        <span class="text-base font-extrabold text-[#1E3A8A]">₹{{ emp.net_salary }}</span>
                     </td>
-                    <td class="px-4 py-2">
-                        <div class= "flex items-center justify-center space-x-1">
-                        <img src="https://img.icons8.com/ios-glyphs/20/7768ae/briefcase.png" alt="Role Icon"/>
-                        <span>{{ emp.role }}</span>
-                    </td>
-                    <td class="px-4 py-2">₹{{ emp.salary }}</td>
-                    <td class="px-4 py-2">₹{{ emp.bonus }}</td>
-                    <td class="px-4 py-2">₹{{ emp.deduction }}</td>
-                    <td class="px-4 py-2 font-semibold text-[#00b9b9]">₹{{ emp.net_salary }}</td>
-                    <td class="px-4 py-2">
-                        <span class="px-2 py-1 rounded text-white 
-                                     {% if emp.status == 'Calculated' %}bg-green-500{% else %}bg-gray-400{% endif %}">
+
+                    <td class="px-6 py-4 text-center">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-50 text-[#16A34A]">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#16A34A]"></span>
                             {{ emp.status }}
                         </span>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="8" class="text-center py-4 text-gray-500">No employees found.</td>
+                    <td colspan="7" class="px-6 py-16 text-center text-sm text-[#475569]">No payroll data found.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
 </div>
 
-<!-- Filter Script -->
 <script>
-    const filterInput = document.getElementById('employeeFilter');
-    filterInput.addEventListener('keyup', function() {
-        const filterValue = this.value.toLowerCase();
-        const table = document.getElementById('payrollTable');
-        const rows = table.getElementsByTagName('tr');
-
-        for (let i = 1; i < rows.length; i++) {
-            const name = rows[i].cells[1].textContent.toLowerCase();
-            const role = rows[i].cells[2].textContent.toLowerCase();
-            rows[i].style.display = (name.includes(filterValue) || role.includes(filterValue)) ? '' : 'none';
-        }
+document.getElementById('employeeFilter').addEventListener('keyup', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('#payrollTable tbody tr').forEach(row => {
+        const name = row.cells[0]?.textContent.toLowerCase() || '';
+        const role = row.cells[1]?.textContent.toLowerCase() || '';
+        row.style.display = (name.includes(q) || role.includes(q)) ? '' : 'none';
     });
+});
 </script>
 {% endblock %}

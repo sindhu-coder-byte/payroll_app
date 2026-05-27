@@ -1,32 +1,172 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Payslip</title>
+    <meta charset="UTF-8">
+    <title>Payslip — {{ employee.name }}</title>
     <style>
-        body { font-family: 'Georgia', serif; font-size:14px; padding: 30px; color: #2c3e50; }
-        .title { text-align: center; font-size: 28px; margin-bottom: 30px; }
-        .info { margin-bottom: 20px; }
-        .info p { margin: 4px 0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border-bottom: 1px solid #ccc; padding: 10px; text-align: left; }
-        .total { font-weight: bold; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Georgia, 'Times New Roman', serif; font-size: 12px; color: #0F172A; background: #fff; }
+        .page { max-width: 700px; margin: 0 auto; padding: 40px; }
+
+        .letterhead { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 16px; border-bottom: 3px double #0F172A; margin-bottom: 24px; }
+        .company-name { font-size: 22px; font-weight: 700; letter-spacing: 0.03em; color: #1E3A8A; }
+        .company-addr { font-size: 10px; color: #475569; margin-top: 4px; font-style: italic; }
+        .doc-meta { text-align: right; }
+        .doc-meta .doc-type { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #0F172A; }
+        .doc-meta .doc-period { font-size: 11px; color: #475569; margin-top: 3px; }
+
+        .emp-block { background: #F8FAFC; border: 1px solid #E2E8F0; padding: 16px 20px; margin-bottom: 24px; }
+        .emp-block-title { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #475569; margin-bottom: 10px; }
+        .emp-cols { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px 20px; }
+        .emp-field .field-key { font-size: 9px; color: #475569; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
+        .emp-field .field-val { font-size: 12px; font-weight: 700; color: #0F172A; }
+
+        .section-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #1E3A8A; border-bottom: 1px solid #1E3A8A; padding-bottom: 4px; margin-bottom: 10px; }
+
+        .ledger { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-family: Georgia, serif; }
+        .ledger thead tr { border-bottom: 1px solid #0F172A; }
+        .ledger thead th { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 6px 10px; text-align: left; color: #0F172A; }
+        .ledger thead th:last-child { text-align: right; }
+        .ledger tbody tr { border-bottom: 1px dotted #CBD5E1; }
+        .ledger tbody td { padding: 8px 10px; font-size: 12px; color: #0F172A; }
+        .ledger tbody td:last-child { text-align: right; }
+        .ledger .earning-amt { color: #16A34A; font-weight: 600; }
+        .ledger .deduct-amt { color: #DC2626; font-weight: 600; }
+        .ledger tfoot tr { border-top: 2px solid #0F172A; }
+        .ledger tfoot td { padding: 10px; font-size: 14px; font-weight: 700; color: #0F172A; }
+        .ledger tfoot td:last-child { text-align: right; }
+
+        .net-banner { background: #1E3A8A; color: #fff; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+        .net-banner .net-label { font-size: 11px; font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; color: #93C5FD; margin-bottom: 4px; font-family: Georgia, serif; }
+        .net-banner .net-amount { font-size: 28px; font-weight: 700; font-family: Georgia, serif; }
+        .net-banner .attendance { font-size: 10px; color: #93C5FD; text-align: right; line-height: 1.8; }
+
+        .notice { font-size: 10px; color: #475569; font-style: italic; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; padding: 8px 0; margin-bottom: 24px; text-align: center; }
+
+        .sig-row { display: flex; justify-content: space-between; margin-top: 32px; }
+        .sig-box { width: 42%; text-align: center; }
+        .sig-line { border-top: 1px solid #0F172A; margin-bottom: 5px; }
+        .sig-name { font-size: 11px; font-weight: 700; color: #0F172A; }
+        .sig-title { font-size: 9px; color: #475569; text-transform: uppercase; letter-spacing: 0.06em; }
+
+        .footer { text-align: center; font-size: 9px; color: #94A3B8; margin-top: 20px; padding-top: 12px; border-top: 1px solid #E2E8F0; font-style: italic; }
     </style>
 </head>
 <body>
-    <div class="title">Payroll System Pvt. Ltd.</div>
-    <div class="info">
-        <p><strong>Name:</strong> {{ employee.name }}</p>
-        <p><strong>Role:</strong> {{ employee.role }}</p>
-    </div>
-    <table>
-        <tr><th>Component</th><th>Amount</th></tr>
-        <tr><td>Salary</td><td>{{ employee.salary }}</td></tr>
-        <tr><td>Bonus</td><td>{{ employee.bonus }}</td></tr>
-        <tr><td>Deductions</td><td>{{ employee.deduction }}</td></tr>
-        <tr class="total"><td>Net Salary</td><td>{{ employee.net_salary }}</td></tr>
-    </table>
-<div class="footer">&copy; {% now "Y" %} Payroll System Pvt. Ltd.</div>
+<div class="page">
 
+    <div class="letterhead">
+        <div>
+            <div class="company-name">PayrollPro</div>
+            <div class="company-addr">Payroll System Pvt. Ltd. &nbsp;&middot;&nbsp; Chennai, Tamil Nadu, India</div>
+        </div>
+        <div class="doc-meta">
+            <div class="doc-type">Salary Statement</div>
+            <div class="doc-period">{{ employee.join_date|date:"F Y" }} &nbsp;&middot;&nbsp; EMP-{{ employee.id|stringformat:"04d" }}</div>
+        </div>
+    </div>
+
+    <div class="emp-block">
+        <div class="emp-block-title">Employee Information</div>
+        <div class="emp-cols">
+            <div class="emp-field">
+                <div class="field-key">Full Name</div>
+                <div class="field-val">{{ employee.name }}</div>
+            </div>
+            <div class="emp-field">
+                <div class="field-key">Designation</div>
+                <div class="field-val">{{ employee.designation|default:"—" }}</div>
+            </div>
+            <div class="emp-field">
+                <div class="field-key">Department</div>
+                <div class="field-val">{{ employee.department }}</div>
+            </div>
+            <div class="emp-field">
+                <div class="field-key">Role</div>
+                <div class="field-val">{{ employee.role }}</div>
+            </div>
+            <div class="emp-field">
+                <div class="field-key">Date of Joining</div>
+                <div class="field-val">{{ employee.join_date|date:"d M Y" }}</div>
+            </div>
+            <div class="emp-field">
+                <div class="field-key">Working Days</div>
+                <div class="field-val">{{ employee.working_days }} days</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-label">Earnings &amp; Deductions</div>
+    <table class="ledger">
+        <thead>
+            <tr>
+                <th>Particulars</th>
+                <th>Description</th>
+                <th>Amount (&#8377;)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Basic Salary</td>
+                <td>Monthly fixed component</td>
+                <td>{{ employee.salary }}</td>
+            </tr>
+            <tr>
+                <td>Dearness Allowance</td>
+                <td>Cost-of-living supplement</td>
+                <td class="earning-amt">+ {{ employee.da }}</td>
+            </tr>
+            <tr>
+                <td>Performance Bonus</td>
+                <td>Monthly incentive payment</td>
+                <td class="earning-amt">+ {{ employee.bonus }}</td>
+            </tr>
+            <tr>
+                <td>Deductions</td>
+                <td>PF / Tax / Other recoveries</td>
+                <td class="deduct-amt">&#8722; {{ employee.deduction }}</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">Total Payable</td>
+                <td>&#8377; {{ employee.net_salary }}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="net-banner">
+        <div>
+            <div class="net-label">Net Salary Disbursed</div>
+            <div class="net-amount">&#8377; {{ employee.net_salary }}</div>
+        </div>
+        <div class="attendance">
+            Working Days: {{ employee.working_days }}<br>
+            Leave Taken: {{ employee.leave_days }}<br>
+            Status: {{ employee.status }}
+        </div>
+    </div>
+
+    <div class="notice">
+        This is a computer-generated payslip and does not require a physical signature unless specified.
+    </div>
+
+    <div class="sig-row">
+        <div class="sig-box">
+            <div class="sig-line"></div>
+            <div class="sig-name">{{ employee.name }}</div>
+            <div class="sig-title">Employee Acknowledgement</div>
+        </div>
+        <div class="sig-box">
+            <div class="sig-line"></div>
+            <div class="sig-name">HR / Finance</div>
+            <div class="sig-title">Authorised Signatory</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Confidential &mdash; For official use only &nbsp;&middot;&nbsp; PayrollPro &copy; {% now "Y" %} &nbsp;&middot;&nbsp; Generated on {% now "d M Y" %}
+    </div>
+</div>
 </body>
 </html>
