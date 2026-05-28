@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Pay Stub &mdash; {{ employee.name }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* ════════════════════════════════════════════════
            TEMPLATE 2 — MODERN TWO-COLUMN BLOCK PAYSLIP
@@ -13,7 +12,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', Arial, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             font-size: 12px;
             color: #1a1a2e;
             background: #f0f2f5;
@@ -595,7 +594,7 @@
     <div class="footer">
         <span>Confidential &mdash; For authorised recipients only</span>
         <span class="footer-brand">PayrollPro</span>
-        <span>Generated: {% now "d M Y, H:i" %} &nbsp;&middot;&nbsp; &copy; {% now "Y" %}</span>
+        <span>Generated: {% now "d M Y" %} &nbsp;&middot;&nbsp; &copy; {% now "Y" %}</span>
     </div>
 
 </div>
