@@ -250,22 +250,33 @@ def download_payslip(request, employee_id):
 
     html_content = render_to_string(template_name, {"employee": employee})
     result = io.BytesIO()
-    pdf = pisa.CreatePDF(io.BytesIO(html_content.encode("UTF-8")), dest=result)
-
-    if not pdf.err:
-        response = HttpResponse(result.getvalue(), content_type="application/pdf")
-        response["Content-Disposition"] = f'attachment; filename="payslip_{employee.name}.pdf"'
-        return response
-    return HttpResponse("Error generating PDF.", status=500)
+    try:
+        pdf = pisa.CreatePDF(io.BytesIO(html_content.encode("UTF-8")), dest=result)
+        if not pdf.err:
+            response = HttpResponse(result.getvalue(), content_type="application/pdf")
+            response["Content-Disposition"] = f'attachment; filename="payslip_{employee.name}.pdf"'
+            return response
+    except Exception:
+        pass
+    return HttpResponse("Error generating PDF — please try a different template.", status=500)
 
 
 # ---------------- UPGRADE ----------------
+PREMIUM_FEATURES = [
+    "Unlimited access to 5+ professional templates",
+    "Instant PDF download for any employee",
+    "Custom branding with your company logo",
+    "Email payslips directly to employees",
+    "Priority support from our team",
+    "Advanced payroll analytics dashboard",
+]
+
 @login_required
 def upgrade_view(request):
     if request.method == "POST":
         messages.success(request, "Upgrade request received. Premium unlocked!")
         return redirect("payslip")
-    return render(request, "payroll_app/upgrade.html")
+    return render(request, "payroll_app/upgrade.html", {"features": PREMIUM_FEATURES})
 
 
 @login_required
