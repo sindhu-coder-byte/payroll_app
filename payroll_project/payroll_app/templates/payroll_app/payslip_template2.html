@@ -6,596 +6,517 @@
     <style>
         /* ════════════════════════════════════════════════
            TEMPLATE 2 — MODERN TWO-COLUMN BLOCK PAYSLIP
+           xhtml2pdf compatible: table-based layout only
            Primary : #1e3a8a  |  Accent : #de5448
         ════════════════════════════════════════════════ */
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 12px;
+            font-size: 11px;
             color: #1a1a2e;
-            background: #f0f2f5;
+            background: #ffffff;
         }
 
         .page {
-            max-width: 760px;
-            margin: 0 auto;
-            background: #fff;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+            width: 100%;
+            padding: 0;
         }
 
-        /* ── 1. HEADER ──────────────────────────────── */
-        .header {
-            background: #1e3a8a;
-            display: flex;
-            align-items: stretch;
-            min-height: 130px;
-            overflow: hidden;
-            position: relative;
+        /* ── HEADER ── */
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1e3a8a;
         }
-
-        /* Left: branding */
-        .header-brand {
-            flex: 1;
-            padding: 28px 32px 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            z-index: 2;
+        .header-brand-cell {
+            padding: 24px 28px 20px;
+            vertical-align: middle;
+            width: 65%;
+        }
+        .header-graphic-cell {
+            padding: 24px 20px 20px;
+            vertical-align: middle;
+            width: 35%;
+            text-align: right;
+            background-color: #172d6e;
         }
         .co-name {
-            font-size: 26px;
-            font-weight: 900;
+            font-size: 22px;
+            font-weight: bold;
             color: #ffffff;
-            letter-spacing: 0.02em;
-            line-height: 1;
+            letter-spacing: 1px;
         }
         .co-tagline {
-            font-size: 10px;
-            font-weight: 500;
+            font-size: 9px;
             color: #93c5fd;
             text-transform: uppercase;
-            letter-spacing: 0.12em;
-            margin-top: 5px;
+            letter-spacing: 2px;
+            margin-top: 3px;
         }
         .co-meta {
-            margin-top: 12px;
-            font-size: 10px;
+            font-size: 9.5px;
             color: #bfdbfe;
+            margin-top: 10px;
             line-height: 1.7;
         }
-
-        /* Right: abstract geometric graphic */
-        .header-graphic {
-            width: 200px;
-            position: relative;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-        .geo-circle {
-            position: absolute;
-            border-radius: 50%;
-        }
-        .geo-c1 {
-            width: 220px; height: 220px;
-            background: rgba(222, 84, 72, 0.25);
-            top: -60px; right: -60px;
-        }
-        .geo-c2 {
-            width: 140px; height: 140px;
-            background: rgba(255,255,255,0.07);
-            top: 20px; right: 20px;
-        }
-        .geo-c3 {
-            width: 70px; height: 70px;
-            background: rgba(222, 84, 72, 0.45);
-            top: 50px; right: 90px;
-        }
-        .geo-bar {
-            position: absolute;
-            bottom: 30px; right: 18px;
-            display: flex; gap: 5px; align-items: flex-end;
-        }
-        .geo-bar span {
-            width: 10px;
-            background: rgba(255,255,255,0.18);
-            border-radius: 2px 2px 0 0;
-        }
         .doc-label {
-            position: absolute;
-            bottom: 16px; left: 20px;
             font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
             color: rgba(255,255,255,0.5);
-        }
-
-        /* ── 2. PAY PERIOD BANNER ───────────────────── */
-        .period-banner {
-            background: #de5448;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 32px;
-        }
-        .period-banner .pb-label {
-            font-size: 9px;
-            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.14em;
+            letter-spacing: 2px;
+        }
+        .doc-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #de5448;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+        .doc-ref {
+            font-size: 10px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        /* ── PAY PERIOD BANNER ── */
+        .banner-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #de5448;
+        }
+        .banner-cell {
+            padding: 9px 20px;
+            text-align: center;
+            vertical-align: middle;
+            border-right: 1px solid rgba(255,255,255,0.25);
+        }
+        .banner-cell:last-child { border-right: none; }
+        .banner-label {
+            font-size: 8px;
+            font-weight: bold;
             color: rgba(255,255,255,0.75);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
         }
-        .period-banner .pb-value {
-            font-size: 13px;
-            font-weight: 800;
+        .banner-value {
+            font-size: 12px;
+            font-weight: bold;
             color: #ffffff;
-            letter-spacing: 0.04em;
-        }
-        .period-banner .pb-divider {
-            width: 1px;
-            height: 28px;
-            background: rgba(255,255,255,0.3);
+            margin-top: 2px;
         }
 
-        /* ── 3. ADMIN INFO GRID ─────────────────────── */
-        .info-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0;
+        /* ── SECTION WRAPPER ── */
+        .section-wrap {
+            padding: 0 28px;
+        }
+
+        /* ── ADMIN INFO GRID ── */
+        .info-outer {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            margin-bottom: 0;
             border-bottom: 2px solid #e8eaf0;
-            margin: 0 32px;
         }
-
-        .info-col {
-            padding: 18px 0;
+        .info-col-cell {
+            vertical-align: top;
+            padding: 14px 0;
+            width: 50%;
         }
-        .info-col:first-child {
-            border-right: 1px solid #e8eaf0;
-            padding-right: 24px;
-        }
-        .info-col:last-child {
-            padding-left: 24px;
-        }
+        .info-col-cell.left { padding-right: 20px; border-right: 1px solid #e8eaf0; }
+        .info-col-cell.right { padding-left: 20px; }
 
         .info-col-title {
-            font-size: 8.5px;
-            font-weight: 800;
+            font-size: 8px;
+            font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 0.14em;
+            letter-spacing: 1.5px;
             color: #1e3a8a;
-            margin-bottom: 10px;
             padding-bottom: 6px;
             border-bottom: 1px solid #e8eaf0;
+            margin-bottom: 8px;
         }
 
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            padding: 4px 0;
-            border-bottom: 1px dotted #e8eaf0;
-        }
-        .info-row:last-child { border-bottom: none; }
-        .info-key {
-            font-size: 10px;
-            font-weight: 500;
-            color: #64748b;
-        }
-        .info-val {
-            font-size: 11px;
-            font-weight: 700;
-            color: #1a1a2e;
-            text-align: right;
-        }
-
-        /* ── 4. FINANCIAL TABLES ────────────────────── */
-        .tables-wrap {
-            padding: 20px 32px 0;
-        }
-
-        .fin-table-block {
-            margin-bottom: 20px;
-        }
-
-        /* Shared 5-column table */
-        .fin-table {
+        .info-row-table {
             width: 100%;
             border-collapse: collapse;
         }
+        .info-row-table tr {
+            border-bottom: 1px dotted #e8eaf0;
+        }
+        .info-row-table tr:last-child { border-bottom: none; }
+        .info-row-table td {
+            padding: 4px 2px;
+            font-size: 10.5px;
+        }
+        .info-key { color: #64748b; font-weight: normal; width: 48%; }
+        .info-val { color: #1a1a2e; font-weight: bold; text-align: right; }
 
-        /* Accent header row */
+        /* ── FINANCIAL TABLES ── */
+        .tables-section {
+            padding: 16px 28px 0;
+        }
+
+        .fin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 14px;
+        }
+
+        /* Accent header */
         .fin-table thead tr {
-            background: #de5448;
+            background-color: #de5448;
         }
         .fin-table thead th {
-            padding: 9px 10px;
-            font-size: 9px;
-            font-weight: 700;
+            padding: 8px 9px;
+            font-size: 8.5px;
+            font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: 1px;
             color: #ffffff;
             text-align: left;
-            white-space: nowrap;
+            border-right: 1px solid rgba(255,255,255,0.2);
         }
-        .fin-table thead th:not(:first-child) {
-            text-align: right;
-        }
+        .fin-table thead th:last-child { border-right: none; }
+        .fin-table thead th.r { text-align: right; }
 
-        /* Column widths — identical for both tables */
-        .col-desc    { width: 34%; }
-        .col-rate    { width: 14%; }
-        .col-hours   { width: 13%; }
-        .col-current { width: 18%; }
-        .col-ytd     { width: 21%; }
+        /* Col widths — identical for both tables */
+        .c-desc  { width: 33%; }
+        .c-rate  { width: 14%; }
+        .c-hours { width: 12%; }
+        .c-cur   { width: 20%; }
+        .c-ytd   { width: 21%; }
 
         /* Body rows */
-        .fin-table tbody tr {
-            border-bottom: 1px solid #e8eaf0;
-        }
-        .fin-table tbody tr:nth-child(even) {
-            background: #f8f9fc;
-        }
+        .fin-table tbody tr { border-bottom: 1px solid #e8eaf0; }
+        .fin-table tbody tr.even { background-color: #f8f9fc; }
         .fin-table tbody td {
-            padding: 8px 10px;
-            font-size: 11.5px;
+            padding: 7px 9px;
+            font-size: 11px;
             color: #1a1a2e;
         }
-        .fin-table tbody td:not(:first-child) {
-            text-align: right;
-        }
+        .fin-table tbody td.r { text-align: right; }
+        .fin-table tbody td.earn-c { color: #16a34a; font-weight: bold; text-align: right; }
+        .fin-table tbody td.deduct-c { color: #b91c1c; font-weight: bold; text-align: right; }
 
-        /* Summary/total row */
-        .fin-table tfoot tr {
-            background: #1e3a8a;
-        }
+        /* Summary / total row */
+        .fin-table tfoot tr { background-color: #1e3a8a; }
         .fin-table tfoot td {
-            padding: 9px 10px;
-            font-size: 11px;
-            font-weight: 800;
+            padding: 8px 9px;
+            font-size: 10.5px;
+            font-weight: bold;
             color: #ffffff;
         }
-        .fin-table tfoot td:not(:first-child) {
-            text-align: right;
-        }
+        .fin-table tfoot td.r { text-align: right; }
 
-        /* Deductions body — subtle red tint on amounts */
-        .fin-table.deduct tbody td.amt {
-            color: #b91c1c;
-            font-weight: 600;
+        /* ── NET PAY CALLOUT ── */
+        .net-section {
+            padding: 0 28px 20px;
         }
-
-        /* ── 5. NET PAY CALLOUT ─────────────────────── */
-        .net-callout {
-            background: #de5448;
-            margin: 0 32px 32px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0;
+        .net-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #de5448;
         }
-
         .net-cell {
-            padding: 22px 24px;
+            padding: 20px 22px;
             text-align: center;
-        }
-        .net-cell:first-child {
+            vertical-align: middle;
+            width: 50%;
             border-right: 1px solid rgba(255,255,255,0.25);
         }
-        .net-cell-label {
-            font-size: 8.5px;
-            font-weight: 700;
+        .net-cell:last-child { border-right: none; }
+        .net-label {
+            font-size: 8px;
+            font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 0.14em;
+            letter-spacing: 1.5px;
             color: rgba(255,255,255,0.75);
-            margin-bottom: 8px;
         }
-        .net-cell-amount {
-            font-size: 30px;
-            font-weight: 900;
+        .net-amount {
+            font-size: 28px;
+            font-weight: bold;
             color: #ffffff;
-            letter-spacing: 0.02em;
-            line-height: 1;
-        }
-        .net-cell-amount sup {
-            font-size: 15px;
-            font-weight: 700;
-            vertical-align: super;
-        }
-        .net-cell-note {
-            font-size: 9px;
-            color: rgba(255,255,255,0.6);
             margin-top: 6px;
         }
-
-        /* ── 6. SIGNATURE STRIP ─────────────────────── */
-        .sig-strip {
-            margin: 0 32px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0 24px;
-            padding-bottom: 28px;
-            border-top: 1px solid #e8eaf0;
-            padding-top: 20px;
+        .net-note {
+            font-size: 9px;
+            color: rgba(255,255,255,0.6);
+            margin-top: 5px;
         }
-        .sig-block { text-align: center; }
-        .sig-space {
-            height: 34px;
-            border-bottom: 1px solid #334155;
+
+        /* ── SIGNATURES ── */
+        .sig-section {
+            padding: 0 28px 24px;
+            border-top: 1px solid #e8eaf0;
+            padding-top: 16px;
+        }
+        .sig-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .sig-cell {
+            text-align: center;
+            padding: 0 12px;
+            vertical-align: top;
+            width: 33.33%;
+        }
+        .sig-line {
+            border-top: 1px solid #334155;
             margin-bottom: 6px;
         }
-        .sig-name  { font-size: 11px; font-weight: 700; color: #1a1a2e; }
-        .sig-title { font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 0.07em; margin-top: 2px; }
+        .sig-name  { font-size: 10.5px; font-weight: bold; color: #1a1a2e; }
+        .sig-title { font-size: 8.5px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
 
-        /* ── 7. FOOTER ──────────────────────────────── */
-        .footer {
-            background: #1a1a2e;
-            padding: 10px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* ── FOOTER ── */
+        .footer-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1a1a2e;
         }
-        .footer span {
-            font-size: 9px;
-            color: #64748b;
-        }
-        .footer .footer-brand {
-            font-size: 10px;
-            font-weight: 700;
-            color: #93c5fd;
-            letter-spacing: 0.06em;
-        }
+        .footer-left  { padding: 9px 28px; font-size: 8.5px; color: #64748b; text-align: left; }
+        .footer-mid   { padding: 9px 12px; font-size: 9.5px; font-weight: bold; color: #93c5fd; text-align: center; letter-spacing: 1px; }
+        .footer-right { padding: 9px 28px; font-size: 8.5px; color: #64748b; text-align: right; }
     </style>
 </head>
 <body>
 <div class="page">
 
     <!-- ① HEADER -->
-    <div class="header">
-        <div class="header-brand">
-            <div class="co-name">PayrollPro</div>
-            <div class="co-tagline">Payroll System Pvt. Ltd.</div>
-            <div class="co-meta">
-                No. 12, Anna Salai, Chennai &ndash; 600 002, Tamil Nadu, India<br>
-                info@payrollpro.in &nbsp;&middot;&nbsp; +91 44 2222 3333
-            </div>
-        </div>
-        <div class="header-graphic">
-            <div class="geo-circle geo-c1"></div>
-            <div class="geo-circle geo-c2"></div>
-            <div class="geo-circle geo-c3"></div>
-            <div class="geo-bar">
-                <span style="height:18px"></span>
-                <span style="height:30px"></span>
-                <span style="height:22px"></span>
-                <span style="height:38px"></span>
-                <span style="height:26px"></span>
-                <span style="height:44px"></span>
-                <span style="height:32px"></span>
-            </div>
-            <div class="doc-label">PAY STUB</div>
-        </div>
-    </div>
+    <table class="header-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td class="header-brand-cell">
+                <div class="co-name">PayrollPro</div>
+                <div class="co-tagline">Payroll System Pvt. Ltd.</div>
+                <div class="co-meta">
+                    No. 12, Anna Salai, Chennai &ndash; 600 002, Tamil Nadu<br>
+                    info@payrollpro.in &nbsp;&middot;&nbsp; +91 44 2222 3333
+                </div>
+            </td>
+            <td class="header-graphic-cell">
+                <div class="doc-label">Pay Stub Document</div>
+                <div class="doc-title">SALARY SLIP</div>
+                <div class="doc-ref">Ref: EMP-{{ employee.id|stringformat:"04d" }}</div>
+                <div class="doc-ref" style="margin-top:3px;">Period: {{ employee.join_date|date:"F Y" }}</div>
+            </td>
+        </tr>
+    </table>
 
     <!-- ② PAY PERIOD BANNER -->
-    <div class="period-banner">
-        <div>
-            <div class="pb-label">Pay Period</div>
-            <div class="pb-value">{{ employee.join_date|date:"F Y" }}</div>
-        </div>
-        <div class="pb-divider"></div>
-        <div>
-            <div class="pb-label">Pay Date</div>
-            <div class="pb-value">{% now "d M Y" %}</div>
-        </div>
-        <div class="pb-divider"></div>
-        <div>
-            <div class="pb-label">Pay Stub No.</div>
-            <div class="pb-value">{{ employee.id|stringformat:"04d" }}</div>
-        </div>
-        <div class="pb-divider"></div>
-        <div>
-            <div class="pb-label">Employee ID</div>
-            <div class="pb-value">EMP-{{ employee.id|stringformat:"04d" }}</div>
-        </div>
-    </div>
+    <table class="banner-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td class="banner-cell">
+                <div class="banner-label">Pay Period</div>
+                <div class="banner-value">{{ employee.join_date|date:"F Y" }}</div>
+            </td>
+            <td class="banner-cell">
+                <div class="banner-label">Pay Date</div>
+                <div class="banner-value">{% now "d M Y" %}</div>
+            </td>
+            <td class="banner-cell">
+                <div class="banner-label">Pay Stub No.</div>
+                <div class="banner-value">{{ employee.id|stringformat:"04d" }}</div>
+            </td>
+            <td class="banner-cell">
+                <div class="banner-label">Employee ID</div>
+                <div class="banner-value">EMP-{{ employee.id|stringformat:"04d" }}</div>
+            </td>
+        </tr>
+    </table>
 
     <!-- ③ ADMIN INFO GRID -->
-    <div class="info-section">
-        <!-- Left: Employee info -->
-        <div class="info-col">
-            <div class="info-col-title">Employee Information</div>
-            <div class="info-row">
-                <span class="info-key">Employee Name</span>
-                <span class="info-val">{{ employee.name }}</span>
-            </div>
-            <div class="info-row">
-                <span class="info-key">Designation</span>
-                <span class="info-val">{{ employee.designation|default:"&mdash;" }}</span>
-            </div>
-            <div class="info-row">
-                <span class="info-key">Department</span>
-                <span class="info-val">{{ employee.department }}</span>
-            </div>
-            <div class="info-row">
-                <span class="info-key">Tax / PAN ID</span>
-                <span class="info-val">XXXXX{{ employee.id|stringformat:"04d" }}X</span>
-            </div>
-        </div>
-        <!-- Right: Payroll metadata -->
-        <div class="info-col">
-            <div class="info-col-title">Payroll Metadata</div>
-            <div class="info-row">
-                <span class="info-key">Role</span>
-                <span class="info-val">{{ employee.role }}</span>
-            </div>
-            <div class="info-row">
-                <span class="info-key">Date of Joining</span>
-                <span class="info-val">{{ employee.join_date|date:"d M Y" }}</span>
-            </div>
-            <div class="info-row">
-                <span class="info-key">Working Days</span>
-                <span class="info-val">{{ employee.working_days }} days</span>
-            </div>
-            <div class="info-row">
-                <span class="info-key">Employment Status</span>
-                <span class="info-val">{{ employee.status }}</span>
-            </div>
-        </div>
+    <div class="section-wrap">
+        <table class="info-outer" cellpadding="0" cellspacing="0">
+            <tr>
+                <!-- Left: Employee info -->
+                <td class="info-col-cell left">
+                    <div class="info-col-title">Employee Information</div>
+                    <table class="info-row-table" cellpadding="0" cellspacing="0">
+                        <tr><td class="info-key">Employee Name</td><td class="info-val">{{ employee.name }}</td></tr>
+                        <tr><td class="info-key">Designation</td><td class="info-val">{{ employee.designation|default:"&mdash;" }}</td></tr>
+                        <tr><td class="info-key">Department</td><td class="info-val">{{ employee.department }}</td></tr>
+                        <tr><td class="info-key">Tax / PAN ID</td><td class="info-val">XXXXX{{ employee.id|stringformat:"04d" }}X</td></tr>
+                    </table>
+                </td>
+                <!-- Right: Payroll metadata -->
+                <td class="info-col-cell right">
+                    <div class="info-col-title">Payroll Metadata</div>
+                    <table class="info-row-table" cellpadding="0" cellspacing="0">
+                        <tr><td class="info-key">Role</td><td class="info-val">{{ employee.role }}</td></tr>
+                        <tr><td class="info-key">Date of Joining</td><td class="info-val">{{ employee.join_date|date:"d M Y" }}</td></tr>
+                        <tr><td class="info-key">Working Days</td><td class="info-val">{{ employee.working_days }} days</td></tr>
+                        <tr><td class="info-key">Employment Status</td><td class="info-val">{{ employee.status }}</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
     </div>
 
     <!-- ④ FINANCIAL TABLES -->
-    <div class="tables-wrap">
+    <div class="tables-section">
 
-        <!-- EARNINGS TABLE -->
-        <div class="fin-table-block">
-            <table class="fin-table">
-                <colgroup>
-                    <col class="col-desc">
-                    <col class="col-rate">
-                    <col class="col-hours">
-                    <col class="col-current">
-                    <col class="col-ytd">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th>Earnings — Description</th>
-                        <th>Rate (&#8377;)</th>
-                        <th>Days / Hrs</th>
-                        <th>Current (&#8377;)</th>
-                        <th>Year to Date (&#8377;)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Basic Salary</td>
-                        <td>&mdash;</td>
-                        <td>{{ employee.working_days }}d</td>
-                        <td>{{ employee.salary }}</td>
-                        <td>{{ employee.salary }}</td>
-                    </tr>
-                    <tr>
-                        <td>Dearness Allowance (DA)</td>
-                        <td>&mdash;</td>
-                        <td>&mdash;</td>
-                        <td>{{ employee.da }}</td>
-                        <td>{{ employee.da }}</td>
-                    </tr>
-                    <tr>
-                        <td>Performance Bonus</td>
-                        <td>&mdash;</td>
-                        <td>&mdash;</td>
-                        <td>{{ employee.bonus }}</td>
-                        <td>{{ employee.bonus }}</td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td>Gross Earnings</td>
-                        <td>&mdash;</td>
-                        <td>{{ employee.work_hours }}h</td>
-                        <td>{{ employee.net_salary }}</td>
-                        <td>{{ employee.net_salary }}</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
+        <!-- EARNINGS -->
+        <table class="fin-table" cellpadding="0" cellspacing="0">
+            <colgroup>
+                <col class="c-desc">
+                <col class="c-rate">
+                <col class="c-hours">
+                <col class="c-cur">
+                <col class="c-ytd">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>Earnings &mdash; Description</th>
+                    <th class="r">Rate (&#8377;)</th>
+                    <th class="r">Days / Hrs</th>
+                    <th class="r">Current (&#8377;)</th>
+                    <th class="r">Year to Date (&#8377;)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Basic Salary</td>
+                    <td class="r">&mdash;</td>
+                    <td class="r">{{ employee.working_days }}d</td>
+                    <td class="r">{{ employee.salary }}</td>
+                    <td class="r">{{ employee.salary }}</td>
+                </tr>
+                <tr class="even">
+                    <td>Dearness Allowance (DA)</td>
+                    <td class="r">&mdash;</td>
+                    <td class="r">&mdash;</td>
+                    <td class="earn-c">{{ employee.da }}</td>
+                    <td class="earn-c">{{ employee.da }}</td>
+                </tr>
+                <tr>
+                    <td>Performance Bonus</td>
+                    <td class="r">&mdash;</td>
+                    <td class="r">&mdash;</td>
+                    <td class="earn-c">{{ employee.bonus }}</td>
+                    <td class="earn-c">{{ employee.bonus }}</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>Gross Earnings</td>
+                    <td class="r">&mdash;</td>
+                    <td class="r">{{ employee.work_hours }}h</td>
+                    <td class="r">{{ employee.net_salary }}</td>
+                    <td class="r">{{ employee.net_salary }}</td>
+                </tr>
+            </tfoot>
+        </table>
 
-        <!-- DEDUCTIONS TABLE -->
-        <div class="fin-table-block">
-            <table class="fin-table deduct">
-                <colgroup>
-                    <col class="col-desc">
-                    <col class="col-rate">
-                    <col class="col-hours">
-                    <col class="col-current">
-                    <col class="col-ytd">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th>Deductions — Description</th>
-                        <th>Rate (&#8377;)</th>
-                        <th>Days / Hrs</th>
-                        <th>Current (&#8377;)</th>
-                        <th>Year to Date (&#8377;)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Provident Fund (PF)</td>
-                        <td>&mdash;</td>
-                        <td>&mdash;</td>
-                        <td class="amt">&mdash;</td>
-                        <td class="amt">&mdash;</td>
-                    </tr>
-                    <tr>
-                        <td>Income Tax (TDS)</td>
-                        <td>&mdash;</td>
-                        <td>&mdash;</td>
-                        <td class="amt">&mdash;</td>
-                        <td class="amt">&mdash;</td>
-                    </tr>
-                    <tr>
-                        <td>Other Deductions</td>
-                        <td>&mdash;</td>
-                        <td>{{ employee.leave_days }}d</td>
-                        <td class="amt">{{ employee.deduction }}</td>
-                        <td class="amt">{{ employee.deduction }}</td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td>Total Deductions</td>
-                        <td>&mdash;</td>
-                        <td>&mdash;</td>
-                        <td>{{ employee.deduction }}</td>
-                        <td>{{ employee.deduction }}</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
+        <!-- DEDUCTIONS -->
+        <table class="fin-table" cellpadding="0" cellspacing="0">
+            <colgroup>
+                <col class="c-desc">
+                <col class="c-rate">
+                <col class="c-hours">
+                <col class="c-cur">
+                <col class="c-ytd">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>Deductions &mdash; Description</th>
+                    <th class="r">Rate (&#8377;)</th>
+                    <th class="r">Days / Hrs</th>
+                    <th class="r">Current (&#8377;)</th>
+                    <th class="r">Year to Date (&#8377;)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Provident Fund (PF)</td>
+                    <td class="r">&mdash;</td>
+                    <td class="r">&mdash;</td>
+                    <td class="r">&mdash;</td>
+                    <td class="r">&mdash;</td>
+                </tr>
+                <tr class="even">
+                    <td>Income Tax (TDS)</td>
+                    <td class="r">&mdash;</td>
+                    <td class="r">&mdash;</td>
+                    <td class="r">&mdash;</td>
+                    <td class="r">&mdash;</td>
+                </tr>
+                <tr>
+                    <td>Other Deductions</td>
+                    <td class="r">&mdash;</td>
+                    <td class="r">{{ employee.leave_days }}d</td>
+                    <td class="deduct-c">{{ employee.deduction }}</td>
+                    <td class="deduct-c">{{ employee.deduction }}</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>Total Deductions</td>
+                    <td class="r">&mdash;</td>
+                    <td class="r">&mdash;</td>
+                    <td class="r">{{ employee.deduction }}</td>
+                    <td class="r">{{ employee.deduction }}</td>
+                </tr>
+            </tfoot>
+        </table>
 
-    </div><!-- /tables-wrap -->
+    </div>
 
     <!-- ⑤ NET PAY CALLOUT -->
-    <div class="net-callout">
-        <div class="net-cell">
-            <div class="net-cell-label">Current Net Pay</div>
-            <div class="net-cell-amount"><sup>&#8377;</sup>{{ employee.net_salary }}</div>
-            <div class="net-cell-note">For {{ employee.join_date|date:"F Y" }}</div>
-        </div>
-        <div class="net-cell">
-            <div class="net-cell-label">Year to Date Net Pay</div>
-            <div class="net-cell-amount"><sup>&#8377;</sup>{{ employee.net_salary }}</div>
-            <div class="net-cell-note">Cumulative as of {% now "M Y" %}</div>
-        </div>
+    <div class="net-section">
+        <table class="net-table" cellpadding="0" cellspacing="0">
+            <tr>
+                <td class="net-cell">
+                    <div class="net-label">Current Net Pay</div>
+                    <div class="net-amount">&#8377; {{ employee.net_salary }}</div>
+                    <div class="net-note">For {{ employee.join_date|date:"F Y" }}</div>
+                </td>
+                <td class="net-cell">
+                    <div class="net-label">Year to Date Net Pay</div>
+                    <div class="net-amount">&#8377; {{ employee.net_salary }}</div>
+                    <div class="net-note">Cumulative as of {% now "M Y" %}</div>
+                </td>
+            </tr>
+        </table>
     </div>
 
     <!-- ⑥ SIGNATURES -->
-    <div class="sig-strip">
-        <div class="sig-block">
-            <div class="sig-space"></div>
-            <div class="sig-name">{{ employee.name }}</div>
-            <div class="sig-title">Employee Acknowledgement</div>
-        </div>
-        <div class="sig-block">
-            <div class="sig-space"></div>
-            <div class="sig-name">HR Manager</div>
-            <div class="sig-title">Human Resources</div>
-        </div>
-        <div class="sig-block">
-            <div class="sig-space"></div>
-            <div class="sig-name">Finance Controller</div>
-            <div class="sig-title">Authorised Signatory</div>
-        </div>
+    <div class="sig-section">
+        <table class="sig-table" cellpadding="0" cellspacing="0">
+            <tr>
+                <td class="sig-cell">
+                    <div class="sig-line"></div>
+                    <div class="sig-name">{{ employee.name }}</div>
+                    <div class="sig-title">Employee Acknowledgement</div>
+                </td>
+                <td class="sig-cell">
+                    <div class="sig-line"></div>
+                    <div class="sig-name">HR Manager</div>
+                    <div class="sig-title">Human Resources</div>
+                </td>
+                <td class="sig-cell">
+                    <div class="sig-line"></div>
+                    <div class="sig-name">Finance Controller</div>
+                    <div class="sig-title">Authorised Signatory</div>
+                </td>
+            </tr>
+        </table>
     </div>
 
     <!-- ⑦ FOOTER -->
-    <div class="footer">
-        <span>Confidential &mdash; For authorised recipients only</span>
-        <span class="footer-brand">PayrollPro</span>
-        <span>Generated: {% now "d M Y" %} &nbsp;&middot;&nbsp; &copy; {% now "Y" %}</span>
-    </div>
+    <table class="footer-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td class="footer-left">Confidential &mdash; For authorised recipients only</td>
+            <td class="footer-mid">PayrollPro</td>
+            <td class="footer-right">Generated: {% now "d M Y" %} &nbsp;&middot;&nbsp; &copy; {% now "Y" %}</td>
+        </tr>
+    </table>
 
 </div>
 </body>

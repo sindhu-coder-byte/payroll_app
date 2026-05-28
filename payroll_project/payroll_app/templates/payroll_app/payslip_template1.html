@@ -4,160 +4,380 @@
     <meta charset="UTF-8">
     <title>Payslip &mdash; {{ employee.name }}</title>
     <style>
-        /* ── TEMPLATE 1: MODERN CORPORATE ── */
+        /* ════════════════════════════════════════════════
+           TEMPLATE 1 — MODERN CORPORATE
+           xhtml2pdf compatible: table-based, px units only
+        ════════════════════════════════════════════════ */
+
+        @page { size: A4; margin: 0; }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Arial', Helvetica, sans-serif; font-size: 12px; color: #0F172A; background: #fff; }
-        .page { max-width: 720px; margin: 0 auto; padding: 0; }
 
-        /* ── Header Band ── */
-        .header { background: #1E3A8A; padding: 0; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; padding: 22px 32px 18px; }
-        .brand { color: #fff; }
-        .brand-name { font-size: 20px; font-weight: 800; letter-spacing: 0.04em; }
-        .brand-sub  { font-size: 10px; color: #93C5FD; margin-top: 2px; letter-spacing: 0.03em; }
-        .header-badge { text-align: right; color: #fff; }
-        .badge-label { font-size: 9px; color: #93C5FD; text-transform: uppercase; letter-spacing: 0.1em; }
-        .badge-id    { font-size: 18px; font-weight: 800; letter-spacing: 0.06em; }
-        .header-strip { background: #0D9488; height: 4px; }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            color: #0F172A;
+            background: #ffffff;
+        }
 
-        /* ── Body ── */
-        .body { border: 1px solid #CBD5E1; border-top: none; padding: 28px 32px 24px; }
+        .page { width: 100%; }
 
-        /* ── Employee Info ── */
-        .emp-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 24px; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 16px 20px; margin-bottom: 24px; }
-        .field-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #475569; margin-bottom: 3px; }
-        .field-val { font-size: 12px; font-weight: 700; color: #0F172A; }
+        /* ── HEADER ── */
+        .hdr-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1E3A8A;
+        }
+        .hdr-brand {
+            padding: 22px 28px 18px;
+            vertical-align: middle;
+            width: 60%;
+        }
+        .hdr-badge {
+            padding: 22px 28px 18px;
+            vertical-align: middle;
+            text-align: right;
+            width: 40%;
+        }
+        .brand-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+            letter-spacing: 1px;
+        }
+        .brand-sub {
+            font-size: 10px;
+            color: #93C5FD;
+            margin-top: 3px;
+        }
+        .badge-label {
+            font-size: 9px;
+            color: #93C5FD;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .badge-id {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-top: 2px;
+        }
+        .hdr-strip {
+            background-color: #0D9488;
+            height: 4px;
+            font-size: 1px;
+            line-height: 1px;
+        }
 
-        /* ── Section heading ── */
-        .sec-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-        .sec-head span { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #1E3A8A; }
-        .sec-head::after { content: ''; flex: 1; height: 1px; background: #CBD5E1; }
+        /* ── BODY WRAPPER ── */
+        .body-wrap {
+            border-left: 1px solid #CBD5E1;
+            border-right: 1px solid #CBD5E1;
+            border-bottom: 1px solid #CBD5E1;
+            padding: 24px 28px 20px;
+        }
 
-        /* ── Two-column salary layout ── */
-        .salary-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; margin-bottom: 0; }
-        .col-head { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; padding: 7px 10px; border-bottom: 2px solid currentColor; margin-bottom: 0; }
-        .col-head.earn  { color: #16A34A; border-color: #16A34A; }
-        .col-head.deduct { color: #DC2626; border-color: #DC2626; }
+        /* ── EMPLOYEE INFO ── */
+        .emp-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            margin-bottom: 20px;
+        }
+        .emp-table td {
+            padding: 10px 14px;
+            vertical-align: top;
+            width: 33.33%;
+        }
+        .field-lbl {
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #475569;
+            margin-bottom: 3px;
+        }
+        .field-val {
+            font-size: 12px;
+            font-weight: bold;
+            color: #0F172A;
+        }
 
-        .col-table { width: 100%; border-collapse: collapse; }
-        .col-table td { padding: 8px 10px; font-size: 12px; border-bottom: 1px solid #F1F5F9; }
-        .col-table td:last-child { text-align: right; font-weight: 600; }
-        .col-table .subtotal td { font-weight: 700; background: #F8FAFC; border-top: 1px solid #CBD5E1; border-bottom: none; font-size: 11px; }
-        .earn-val  { color: #16A34A; }
+        /* ── SECTION HEADING ── */
+        .sec-head {
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #1E3A8A;
+            border-bottom: 1px solid #CBD5E1;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        /* ── EARNINGS / DEDUCTIONS TWO-COLUMN ── */
+        .salary-outer {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+        }
+        .salary-col-cell {
+            vertical-align: top;
+            width: 50%;
+        }
+        .salary-col-cell.left { padding-right: 10px; }
+        .salary-col-cell.right { padding-left: 10px; }
+
+        .col-head {
+            font-size: 9px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 7px 10px;
+            margin-bottom: 0;
+        }
+        .col-head.earn   { color: #16A34A; border-bottom: 2px solid #16A34A; }
+        .col-head.deduct { color: #DC2626; border-bottom: 2px solid #DC2626; }
+
+        .col-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .col-table tr { border-bottom: 1px solid #F1F5F9; }
+        .col-table td {
+            padding: 8px 10px;
+            font-size: 11.5px;
+        }
+        .col-table td.amt { text-align: right; font-weight: bold; }
+        .col-table tr.subtotal td {
+            font-weight: bold;
+            background-color: #F8FAFC;
+            border-top: 1px solid #CBD5E1;
+            border-bottom: none;
+            font-size: 11px;
+        }
+        .earn-val   { color: #16A34A; }
         .deduct-val { color: #DC2626; }
 
-        /* ── Net Pay ── */
-        .net-box { margin-top: 20px; background: #1E3A8A; border-radius: 6px; display: flex; align-items: stretch; overflow: hidden; }
-        .net-main { flex: 1; padding: 18px 24px; }
-        .net-lbl  { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #93C5FD; margin-bottom: 5px; }
-        .net-amt  { font-size: 30px; font-weight: 900; color: #fff; letter-spacing: 0.02em; }
-        .net-side { background: #172A6A; padding: 18px 24px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-width: 160px; }
-        .net-stat { font-size: 10px; color: #93C5FD; }
-        .net-stat strong { color: #fff; font-weight: 700; display: block; font-size: 11px; }
+        /* ── NET PAY ── */
+        .net-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1E3A8A;
+            margin-top: 18px;
+        }
+        .net-main-cell {
+            padding: 16px 22px;
+            vertical-align: middle;
+        }
+        .net-side-cell {
+            padding: 16px 20px;
+            vertical-align: middle;
+            background-color: #172A6A;
+            width: 180px;
+            text-align: right;
+        }
+        .net-lbl {
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #93C5FD;
+            margin-bottom: 5px;
+        }
+        .net-amt {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .net-stat {
+            font-size: 10px;
+            color: #93C5FD;
+            margin-bottom: 5px;
+        }
+        .net-stat strong {
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 11px;
+        }
 
-        /* ── Signatures ── */
-        .sig-row { display: flex; justify-content: space-between; margin-top: 28px; padding-top: 20px; border-top: 1px solid #E2E8F0; }
-        .sig { width: 42%; text-align: center; }
-        .sig-line { border-top: 1px solid #334155; margin-bottom: 6px; }
-        .sig-name { font-size: 11px; font-weight: 700; color: #0F172A; }
-        .sig-title { font-size: 9px; color: #64748B; text-transform: uppercase; letter-spacing: 0.06em; }
+        /* ── SIGNATURES ── */
+        .sig-wrap {
+            margin-top: 24px;
+            border-top: 1px solid #E2E8F0;
+            padding-top: 18px;
+        }
+        .sig-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .sig-cell { text-align: center; padding: 0 10px; vertical-align: top; }
+        .sig-line {
+            border-top: 1px solid #334155;
+            margin-bottom: 6px;
+        }
+        .sig-name  { font-size: 11px; font-weight: bold; color: #0F172A; }
+        .sig-title { font-size: 9px; color: #64748B; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
 
-        /* ── Footer ── */
-        .footer { text-align: center; font-size: 9px; color: #94A3B8; margin-top: 18px; border-top: 1px solid #E2E8F0; padding-top: 10px; }
+        /* ── FOOTER ── */
+        .footer {
+            text-align: center;
+            font-size: 9px;
+            color: #94A3B8;
+            margin-top: 16px;
+            border-top: 1px solid #E2E8F0;
+            padding-top: 10px;
+        }
     </style>
 </head>
 <body>
 <div class="page">
 
-    <!-- Header -->
-    <div class="header">
-        <div class="header-top">
-            <div class="brand">
+    <!-- HEADER -->
+    <table class="hdr-table" cellpadding="0" cellspacing="0">
+        <tr>
+            <td class="hdr-brand">
                 <div class="brand-name">PayrollPro</div>
                 <div class="brand-sub">Payroll System Pvt. Ltd. &nbsp;&middot;&nbsp; Chennai, India</div>
-            </div>
-            <div class="header-badge">
+            </td>
+            <td class="hdr-badge">
                 <div class="badge-label">Employee ID</div>
                 <div class="badge-id">EMP-{{ employee.id|stringformat:"04d" }}</div>
-                <div class="badge-label" style="margin-top:4px;">{{ employee.join_date|date:"F Y" }}</div>
-            </div>
-        </div>
-        <div class="header-strip"></div>
-    </div>
+                <div class="badge-label" style="margin-top:5px;">{{ employee.join_date|date:"F Y" }}</div>
+            </td>
+        </tr>
+    </table>
+    <div class="hdr-strip">&nbsp;</div>
 
-    <!-- Body -->
-    <div class="body">
+    <!-- BODY -->
+    <div class="body-wrap">
 
-        <!-- Employee Info -->
-        <div class="emp-row">
-            <div><div class="field-lbl">Full Name</div><div class="field-val">{{ employee.name }}</div></div>
-            <div><div class="field-lbl">Designation</div><div class="field-val">{{ employee.designation|default:"&mdash;" }}</div></div>
-            <div><div class="field-lbl">Department</div><div class="field-val">{{ employee.department }}</div></div>
-            <div><div class="field-lbl">Role</div><div class="field-val">{{ employee.role }}</div></div>
-            <div><div class="field-lbl">Date of Joining</div><div class="field-val">{{ employee.join_date|date:"d M Y" }}</div></div>
-            <div><div class="field-lbl">Status</div><div class="field-val">{{ employee.status }}</div></div>
-        </div>
+        <!-- Employee Info: 2 rows x 3 cols -->
+        <table class="emp-table" cellpadding="0" cellspacing="0">
+            <tr>
+                <td>
+                    <div class="field-lbl">Full Name</div>
+                    <div class="field-val">{{ employee.name }}</div>
+                </td>
+                <td>
+                    <div class="field-lbl">Designation</div>
+                    <div class="field-val">{{ employee.designation|default:"&mdash;" }}</div>
+                </td>
+                <td>
+                    <div class="field-lbl">Department</div>
+                    <div class="field-val">{{ employee.department }}</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="field-lbl">Role</div>
+                    <div class="field-val">{{ employee.role }}</div>
+                </td>
+                <td>
+                    <div class="field-lbl">Date of Joining</div>
+                    <div class="field-val">{{ employee.join_date|date:"d M Y" }}</div>
+                </td>
+                <td>
+                    <div class="field-lbl">Status</div>
+                    <div class="field-val">{{ employee.status }}</div>
+                </td>
+            </tr>
+        </table>
 
-        <!-- Salary Breakdown -->
-        <div class="sec-head"><span>Salary Breakdown</span></div>
+        <!-- Salary Breakdown heading -->
+        <div class="sec-head">Salary Breakdown</div>
 
-        <div class="salary-cols">
-            <!-- Earnings column -->
-            <div>
-                <div class="col-head earn">Earnings</div>
-                <table class="col-table">
-                    <tr><td>Basic Salary</td><td class="earn-val">&#8377; {{ employee.salary }}</td></tr>
-                    <tr><td>Dearness Allowance</td><td class="earn-val">&#8377; {{ employee.da }}</td></tr>
-                    <tr><td>Performance Bonus</td><td class="earn-val">&#8377; {{ employee.bonus }}</td></tr>
-                    <tr class="subtotal"><td>Gross Earnings</td><td class="earn-val">&#8377; {{ employee.net_salary }}</td></tr>
-                </table>
-            </div>
-            <!-- Deductions column -->
-            <div>
-                <div class="col-head deduct">Deductions</div>
-                <table class="col-table">
-                    <tr><td>PF / Tax / Recovery</td><td class="deduct-val">&#8377; {{ employee.deduction }}</td></tr>
-                    <tr><td>Leave Deduction</td><td class="deduct-val">&mdash;</td></tr>
-                    <tr><td>Other</td><td class="deduct-val">&mdash;</td></tr>
-                    <tr class="subtotal"><td>Total Deductions</td><td class="deduct-val">&#8377; {{ employee.deduction }}</td></tr>
-                </table>
-            </div>
-        </div>
+        <!-- Two-column: Earnings | Deductions -->
+        <table class="salary-outer" cellpadding="0" cellspacing="0">
+            <tr>
+                <!-- Earnings -->
+                <td class="salary-col-cell left">
+                    <div class="col-head earn">Earnings</div>
+                    <table class="col-table" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td>Basic Salary</td>
+                            <td class="amt earn-val">&#8377; {{ employee.salary }}</td>
+                        </tr>
+                        <tr>
+                            <td>Dearness Allowance</td>
+                            <td class="amt earn-val">&#8377; {{ employee.da }}</td>
+                        </tr>
+                        <tr>
+                            <td>Performance Bonus</td>
+                            <td class="amt earn-val">&#8377; {{ employee.bonus }}</td>
+                        </tr>
+                        <tr class="subtotal">
+                            <td>Gross Earnings</td>
+                            <td class="amt earn-val">&#8377; {{ employee.net_salary }}</td>
+                        </tr>
+                    </table>
+                </td>
+                <!-- Deductions -->
+                <td class="salary-col-cell right">
+                    <div class="col-head deduct">Deductions</div>
+                    <table class="col-table" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td>PF / Tax / Recovery</td>
+                            <td class="amt deduct-val">&#8377; {{ employee.deduction }}</td>
+                        </tr>
+                        <tr>
+                            <td>Leave Deduction</td>
+                            <td class="amt deduct-val">&mdash;</td>
+                        </tr>
+                        <tr>
+                            <td>Other</td>
+                            <td class="amt deduct-val">&mdash;</td>
+                        </tr>
+                        <tr class="subtotal">
+                            <td>Total Deductions</td>
+                            <td class="amt deduct-val">&#8377; {{ employee.deduction }}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
 
         <!-- Net Pay -->
-        <div class="net-box">
-            <div class="net-main">
-                <div class="net-lbl">Net Salary &mdash; Take Home</div>
-                <div class="net-amt">&#8377; {{ employee.net_salary }}</div>
-            </div>
-            <div class="net-side">
-                <div class="net-stat"><strong>{{ employee.working_days }}</strong>Working Days</div>
-                <div class="net-stat"><strong>{{ employee.leave_days }}</strong>Leave Taken</div>
-                <div class="net-stat"><strong>{{ employee.status }}</strong>Pay Status</div>
-            </div>
-        </div>
+        <table class="net-table" cellpadding="0" cellspacing="0">
+            <tr>
+                <td class="net-main-cell">
+                    <div class="net-lbl">Net Salary &mdash; Take Home</div>
+                    <div class="net-amt">&#8377; {{ employee.net_salary }}</div>
+                </td>
+                <td class="net-side-cell">
+                    <div class="net-stat"><strong>{{ employee.working_days }}</strong> Working Days</div>
+                    <div class="net-stat"><strong>{{ employee.leave_days }}</strong> Leave Taken</div>
+                    <div class="net-stat"><strong>{{ employee.status }}</strong></div>
+                </td>
+            </tr>
+        </table>
 
         <!-- Signatures -->
-        <div class="sig-row">
-            <div class="sig">
-                <div class="sig-line"></div>
-                <div class="sig-name">{{ employee.name }}</div>
-                <div class="sig-title">Employee Signature</div>
-            </div>
-            <div class="sig">
-                <div class="sig-line"></div>
-                <div class="sig-name">HR / Finance Department</div>
-                <div class="sig-title">Authorised Signatory</div>
-            </div>
+        <div class="sig-wrap">
+            <table class="sig-table" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td class="sig-cell">
+                        <div class="sig-line"></div>
+                        <div class="sig-name">{{ employee.name }}</div>
+                        <div class="sig-title">Employee Signature</div>
+                    </td>
+                    <td class="sig-cell">
+                        <div class="sig-line"></div>
+                        <div class="sig-name">HR / Finance Department</div>
+                        <div class="sig-title">Authorised Signatory</div>
+                    </td>
+                </tr>
+            </table>
         </div>
 
-    </div><!-- /body -->
+        <div class="footer">
+            Confidential &mdash; For authorised recipients only &nbsp;&middot;&nbsp;
+            PayrollPro &copy; {% now "Y" %} &nbsp;&middot;&nbsp;
+            Generated on {% now "d M Y" %}
+        </div>
 
-    <div class="footer">
-        Confidential &mdash; For authorised recipients only &nbsp;&middot;&nbsp;
-        PayrollPro &copy; {% now "Y" %} &nbsp;&middot;&nbsp;
-        Generated on {% now "d M Y" %}
-    </div>
+    </div><!-- /body-wrap -->
 
 </div>
 </body>
